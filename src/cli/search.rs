@@ -37,7 +37,12 @@ fn collect_files(dir: &std::path::Path, files: &mut Vec<std::path::PathBuf>) -> 
             } else if path.is_file() {
                 if let Some(ext) = path.extension().and_then(|s| s.to_str()) {
                     let ext_lower = ext.to_lowercase();
-                    if ext_lower == "md" || ext_lower == "markdown" || ext_lower == "txt" {
+                    if matches!(
+                        ext_lower.as_str(),
+                        "md" | "markdown" | "txt" | "csv" |
+                        "rs" | "py" | "js" | "ts" | "tsx" | "jsx" | "go" | "c" | "cpp" | "h" | "hpp" |
+                        "java" | "sh" | "yaml" | "yml" | "json" | "toml" | "html" | "css" | "rb" | "php" | "lua"
+                    ) {
                         files.push(path);
                     }
                 }
@@ -149,7 +154,7 @@ pub fn run(mut args: Vec<String>) {
                     sec.filename = Some(filename.clone());
                     dir_sections.push(sec);
                 }
-            } else if ext == "txt" {
+            } else {
                 dir_sections.push(crate::bm25::Section {
                     title: filename.clone(),
                     body: content,
