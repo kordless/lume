@@ -479,6 +479,11 @@ fn get_tools_list() -> serde_json::Value {
                         "max_tokens": {
                             "type": "integer",
                             "description": "Optional maximum number of tokens to generate (default 150)."
+                        },
+                        "injected_tags": {
+                            "type": "array",
+                            "items": { "type": "string" },
+                            "description": "Optional actor or location tags (e.g. ['DANTES', 'CHATEAUDIF']) to inject and persistently steer the text synthesis."
                         }
                     },
                     "required": ["target_path"]
@@ -627,6 +632,7 @@ fn execute_generate(
     target_path: &str,
     seed: Option<&str>,
     max_tokens: Option<usize>,
+    injected_tags: Option<Vec<String>>,
 ) -> Result<serde_json::Value, String> {
     let (index, _) = get_or_build_index(target_path, tagger)?;
 
@@ -637,12 +643,15 @@ fn execute_generate(
 
     let chain = MarkovChain::build(&bodies);
     let tokens_to_gen = max_tokens.unwrap_or(150);
+    let tags = injected_tags.unwrap_or_default();
 
     let (text, attention_history) = chain.generate_steered(
         seed,
         tokens_to_gen,
         tagger,
         &index.entity_posting_lists,
+        &index.posting_lists,
+        &tags,
     );
 
     let mut markdown = String::new();
@@ -809,7 +818,10 @@ pub fn run(_args: Vec<String>) {
                                 let target_path = p.arguments.get("target_path").and_then(|v| v.as_str()).unwrap_or("");
                                 let seed = p.arguments.get("seed").and_then(|v| v.as_str());
                                 let max_tokens = p.arguments.get("max_tokens").and_then(|v| v.as_u64()).map(|n| n as usize);
-                                match execute_generate(tagger.as_ref(), target_path, seed, max_tokens) {
+                                let injected_tags = p.arguments.get("injected_tags")
+                                    .and_then(|v| v.as_array())
+                                    .map(|arr| arr.iter().filter_map(|x| x.as_str().map(|s| s.to_string())).collect::<Vec<String>>());
+                                match execute_generate(tagger.as_ref(), target_path, seed, max_tokens, injected_tags) {
                                     Ok(json_val) => ToolCallResult {
                                         content: vec![McpContent {
                                             content_type: "text".to_string(),

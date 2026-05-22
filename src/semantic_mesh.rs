@@ -271,13 +271,20 @@ impl MarkovChain {
         seed_word: Option<&str>,
         max_tokens: usize,
         tagger: Option<&crate::Tagger>,
-        posting_lists: &HashMap<String, MiniRoaring>,
+        entity_posting_lists: &HashMap<String, MiniRoaring>,
+        token_posting_lists: &HashMap<Vec<u8>, MiniRoaring>,
+        injected_tags: &[String],
     ) -> (String, Vec<(usize, HashMap<String, f64>)>) {
         let mut rng = SimpleRng::new();
         let mut tokens = Vec::new();
         let mut visited_trigrams = std::collections::HashSet::new();
         let mut attention_register: HashMap<String, f64> = HashMap::new();
         let mut attention_history = Vec::new();
+
+        // 0. Pre-inject requested tags into attention register
+        for tag in injected_tags {
+            attention_register.insert(tag.to_uppercase(), 1.0);
+        }
 
         // 1. Choose starting pair
         let mut current_pair = None;
@@ -326,37 +333,56 @@ impl MarkovChain {
                     break;
                 }
 
-                // Deduplicate transitions
-                let mut candidates_w3 = Vec::new();
+                // Collect transitions with their frequencies to preserve original probability distribution
+                let mut candidate_freqs = HashMap::new();
                 for w in next_words {
                     let trigram = (w1.clone(), w2.clone(), w.clone());
                     if !visited_trigrams.contains(&trigram) {
-                        candidates_w3.push(w.clone());
+                        *candidate_freqs.entry(w.clone()).or_insert(0) += 1;
                     }
                 }
 
-                let w3 = if !candidates_w3.is_empty() {
+                let w3 = if !candidate_freqs.is_empty() {
+                    let candidates_w3: Vec<String> = candidate_freqs.keys().cloned().collect();
                     // Compute dynamic attention weights for candidates
-                    let mut candidate_weights = vec![1.0; candidates_w3.len()];
-                    for (c_idx, c) in candidates_w3.iter().enumerate() {
+                    let mut candidate_weights = Vec::with_capacity(candidates_w3.len());
+                    for c in &candidates_w3 {
+                        let freq = candidate_freqs.get(c).copied().unwrap_or(1);
+                        let mut weight = freq as f64; // Start with the natural frequency as base weight
+                        
                         let c_upper = c.to_uppercase();
+
+                        // Tokenize candidate to get its folded bytes key in the index
+                        let c_toks = crate::tokenize(c);
+                        let c_bytes = c_toks.first().map(|t| t.bytes.clone());
                         
                         for (active_tag, active_weight) in &attention_register {
                             let tag_upper = active_tag.to_uppercase();
                             
-                            // 1. Co-occurrence graph Jaccard boost
-                            if let (Some(list_c), Some(list_t)) = (posting_lists.get(&c_upper), posting_lists.get(&tag_upper)) {
+                            // 1. Co-occurrence graph Jaccard boost using actual text token posting lists!
+                            if let Some(ref cb) = c_bytes {
+                                if let (Some(list_c), Some(list_t)) = (token_posting_lists.get(cb), entity_posting_lists.get(&tag_upper)) {
+                                    let jaccard = list_c.jaccard_similarity(list_t);
+                                    if jaccard > 0.0 {
+                                        weight += 80.0 * jaccard * active_weight;
+                                    }
+                                }
+                            }
+                            
+                            // Also check entity-to-entity posting lists for co-occurrence!
+                            if let (Some(list_c), Some(list_t)) = (entity_posting_lists.get(&c_upper), entity_posting_lists.get(&tag_upper)) {
                                 let jaccard = list_c.jaccard_similarity(list_t);
                                 if jaccard > 0.0 {
-                                    candidate_weights[c_idx] += 80.0 * jaccard * active_weight;
+                                    weight += 80.0 * jaccard * active_weight;
                                 }
                             }
                             
                             // 2. Direct name/substring matching boost
                             if tag_upper.contains(&c_upper) || c_upper.contains(&tag_upper) {
-                                candidate_weights[c_idx] += 30.0 * active_weight;
+                                weight += 30.0 * active_weight;
                             }
                         }
+                        candidate_weights.push(weight);
                     }
 
                     // Weighted random choice
@@ -364,8 +390,8 @@ impl MarkovChain {
                     if total_weight > 0.0 {
                         let mut roll = (rng.next_range(0, 100000) as f64 / 100000.0) * total_weight;
                         let mut chosen_idx = 0;
-                        for (idx, &w) in candidate_weights.iter().enumerate() {
-                            roll -= w;
+                        for (idx, _) in candidate_weights.iter().enumerate() {
+                            roll -= candidate_weights[idx];
                             if roll <= 0.0 {
                                 chosen_idx = idx;
                                 break;
@@ -407,8 +433,13 @@ impl MarkovChain {
                 }
 
                 // Decay attention weights
-                for weight in attention_register.values_mut() {
+                for (tag, weight) in attention_register.iter_mut() {
+                    let is_injected = injected_tags.iter().any(|it| it.to_uppercase() == tag.to_uppercase());
                     *weight *= 0.85;
+                    // If it is an injected tag, keep it at at least 0.3 to sustain thematic focus!
+                    if is_injected && *weight < 0.3 {
+                        *weight = 0.3;
+                    }
                 }
                 attention_register.retain(|_, &mut w| w > 0.05);
 

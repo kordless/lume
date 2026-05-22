@@ -264,7 +264,8 @@ pub fn run(mut args: Vec<String>) {
             execute_graph(&index, min_similarity);
         } else if cmd == "generate" {
             let seed = args.get(1).map(|s| s.as_str());
-            execute_generate(&index, tagger.as_ref(), seed, doc_name, is_csv);
+            let injected_tags: Vec<String> = args.iter().skip(2).map(|s| s.to_string()).collect();
+            execute_generate(&index, tagger.as_ref(), seed, &injected_tags, doc_name, is_csv);
         } else {
             let query = args.join(" ");
             execute_search(&index, tagger.as_ref(), &spell_index, &query, variant, &params);
@@ -314,6 +315,7 @@ fn execute_generate(
     index: &Bm25Index,
     tagger: Option<&Tagger>,
     seed: Option<&str>,
+    injected_tags: &[String],
     doc_name: &str,
     is_csv: bool,
 ) {
@@ -337,6 +339,8 @@ fn execute_generate(
         150,
         tagger,
         &index.entity_posting_lists,
+        &index.posting_lists,
+        injected_tags,
     );
     let gen_elapsed = start_gen.elapsed();
     
@@ -573,7 +577,8 @@ fn run_repl(
                 continue;
             } else if cmd == "generate" {
                 let seed = parts.get(1).map(|s| *s);
-                execute_generate(index, tagger, seed, doc_name, is_csv);
+                let injected_tags: Vec<String> = parts.iter().skip(2).map(|s| s.to_string()).collect();
+                execute_generate(index, tagger, seed, &injected_tags, doc_name, is_csv);
                 println!();
                 continue;
             } else if cmd == "chat" {
@@ -674,6 +679,15 @@ fn run_chat_mode(
             continue;
         }
 
+        // Dynamically extract entity tags from user's chat query to steer the response!
+        let mut injected_chat_tags = Vec::new();
+        if let Some(t) = tagger {
+            let query_tags = t.tag(query);
+            for tag in query_tags {
+                injected_chat_tags.push(tag.output);
+            }
+        }
+
         let top_hit = &hits[0];
         let section = &index.sections[top_hit.section_index];
         let query_tokens = crate::tokenize(query);
@@ -698,6 +712,8 @@ fn run_chat_mode(
                 30,
                 tagger,
                 &index.entity_posting_lists,
+                &index.posting_lists,
+                &injected_chat_tags,
             );
             println!("     \x1B[1;33m💡 Simulated Pattern Row:\x1B[0m");
             println!("        {}", simulated);
@@ -733,6 +749,8 @@ fn run_chat_mode(
                 80,
                 tagger,
                 &index.entity_posting_lists,
+                &index.posting_lists,
+                &injected_chat_tags,
             );
             println!();
             
