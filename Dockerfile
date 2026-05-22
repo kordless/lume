@@ -47,11 +47,11 @@ USER lume:lume
 
 # Predefine default environment variables
 ENV DATA=/app/data
-ENV PORT=8080
+ENV PORT=8282
 ENV RUST_BACKTRACE=1
 
 # Expose port for HTTP tag-server mode
-EXPOSE 8080
+EXPOSE 8282
 
 # Configure the entrypoint to route directly to our unibinary
 ENTRYPOINT ["/usr/local/bin/lume"]

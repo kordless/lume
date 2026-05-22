@@ -42,7 +42,7 @@ pub fn run(mut args: Vec<String>) {
         }
     };
 
-    let port = env::var("PORT").ok().unwrap_or_else(|| "8080".to_string());
+    let port = env::var("PORT").ok().unwrap_or_else(|| "8282".to_string());
     let addr = args
         .into_iter()
         .next()

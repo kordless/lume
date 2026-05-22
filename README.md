@@ -315,10 +315,10 @@ DOCKER_BUILDKIT=1 docker build -t lume:latest .
 ```
 
 ### 2. Deploy as an HTTP Tagger Server
-By default, the container boots the HTTP REST API server on port `8080`:
+By default, the container boots the HTTP REST API server on port `8282`:
 ```bash
 docker run -d \
-  -p 8080:8080 \
+  -p 8282:8282 \
   --name lume-server \
   lume:latest
 ```
