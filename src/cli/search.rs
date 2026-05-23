@@ -130,9 +130,15 @@ pub fn run(mut args: Vec<String>) {
 
         let mut dir_sections = Vec::new();
         for file_path in files {
-            let filename = file_path.file_name()
-                .and_then(|s| s.to_str())
-                .unwrap_or("")
+            let filename = file_path.strip_prefix(path)
+                .ok()
+                .and_then(|p| p.to_str())
+                .unwrap_or_else(|| {
+                    file_path.file_name()
+                        .and_then(|s| s.to_str())
+                        .unwrap_or("")
+                })
+                .replace("\\", "/")
                 .to_string();
             
             let content = match fs::read_to_string(&file_path) {
@@ -256,6 +262,13 @@ pub fn run(mut args: Vec<String>) {
         spell_index.num_words, spelling_time
     );
 
+    // Extract --hybrid or --boost flags
+    let mut use_hybrid = false;
+    if let Some(pos) = args.iter().position(|a| a.eq_ignore_ascii_case("--hybrid") || a.eq_ignore_ascii_case("--boost")) {
+        args.remove(pos);
+        use_hybrid = true;
+    }
+
     // If query terms are passed as args, check for specialized commands or execute one-shot search
     if !args.is_empty() {
         let cmd = args[0].trim().to_lowercase();
@@ -268,11 +281,18 @@ pub fn run(mut args: Vec<String>) {
             execute_generate(&index, tagger.as_ref(), seed, &injected_tags, doc_name, is_csv);
         } else {
             let query = args.join(" ");
-            execute_search(&index, tagger.as_ref(), &spell_index, &query, variant, &params);
+            if use_hybrid {
+                match crate::hybrid::execute_hybrid_search(&index, tagger.as_ref(), &md_path, &query) {
+                    Ok(result) => result.print_cli(),
+                    Err(e) => eprintln!("\x1B[1;31mError in hybrid search: {}\x1B[0m", e),
+                }
+            } else {
+                execute_search(&index, tagger.as_ref(), &spell_index, &query, variant, &params);
+            }
         }
     } else {
         // Run Interactive REPL loop
-        run_repl(&index, tagger.as_ref(), &spell_index, variant, &params, doc_name, is_csv);
+        run_repl(&index, tagger.as_ref(), &spell_index, variant, &params, doc_name, is_csv, &md_path, use_hybrid);
     }
 }
 
@@ -458,9 +478,19 @@ fn execute_search(
     let hits = index.search(query, variant, params, tagger);
     let elapsed = start_search.elapsed();
 
-    eprintln!("\x1B[34mFound {} ranked results in {:.2?}\x1B[0m\n", hits.len(), elapsed);
+    let limit = env::var("LIMIT").ok().and_then(|s| s.parse::<usize>().ok());
+    if let Some(lim) = limit {
+        eprintln!("\x1B[34mFound {} ranked results (showing top {}) in {:.2?}\x1B[0m\n", hits.len(), lim, elapsed);
+    } else {
+        eprintln!("\x1B[34mFound {} ranked results in {:.2?}\x1B[0m\n", hits.len(), elapsed);
+    }
 
     for (rank, hit) in hits.iter().enumerate() {
+        if let Some(lim) = limit {
+            if rank >= lim {
+                break;
+            }
+        }
         let section = &index.sections[hit.section_index];
         println!(
             "\x1B[1;35mRank {} | Score: {:.4}\x1B[0m",
@@ -527,6 +557,8 @@ fn run_repl(
     params: &Bm25Params,
     doc_name: &str,
     is_csv: bool,
+    md_path: &str,
+    default_hybrid: bool,
 ) {
     println!();
     println!("      \x1B[1;36m▄▀▀▄        Antigravity Search Mesh REPL\x1B[0m");
@@ -535,6 +567,7 @@ fn run_repl(
     println!("────────────────────────────────────────────────────────────");
     println!("Commands:");
     println!("  - Type a query to search the BM25 FST mesh.");
+    println!("  - Type \x1B[1mhybrid <query>\x1B[0m or \x1B[1mboost <query>\x1B[0m to run Erik Hatcher's semantic boosting search.");
     println!("  - Type \x1B[1mchat\x1B[0m to enter interactive Q&A AI mode.");
     println!("  - Type \x1B[1mgraph [min_sim]\x1B[0m to compute entity graph & write JSON.");
     if is_csv {
@@ -548,7 +581,11 @@ fn run_repl(
     let mut stdout = io::stdout();
 
     loop {
-        print!("\x1B[1;32msearch > \x1B[0m");
+        if default_hybrid {
+            print!("\x1B[1;32mhybrid-search > \x1B[0m");
+        } else {
+            print!("\x1B[1;32msearch > \x1B[0m");
+        }
         let _ = stdout.flush();
 
         let mut line = String::new();
@@ -585,10 +622,29 @@ fn run_repl(
                 run_chat_mode(index, tagger, spell_index, variant, params, doc_name, is_csv);
                 println!();
                 continue;
+            } else if cmd == "boost" || cmd == "hybrid" {
+                let hybrid_query = parts.iter().skip(1).cloned().collect::<Vec<&str>>().join(" ");
+                if hybrid_query.is_empty() {
+                    println!("\x1B[1;31mUsage:\x1B[0m {} <query>", cmd);
+                } else {
+                    match crate::hybrid::execute_hybrid_search(index, tagger, md_path, &hybrid_query) {
+                        Ok(result) => result.print_cli(),
+                        Err(e) => eprintln!("\x1B[1;31mError: {}\x1B[0m", e),
+                    }
+                }
+                println!();
+                continue;
             }
         }
 
-        execute_search(index, tagger, spell_index, query, variant, params);
+        if default_hybrid {
+            match crate::hybrid::execute_hybrid_search(index, tagger, md_path, query) {
+                Ok(result) => result.print_cli(),
+                Err(e) => eprintln!("\x1B[1;31mError: {}\x1B[0m", e),
+            }
+        } else {
+            execute_search(index, tagger, spell_index, query, variant, params);
+        }
         println!();
     }
 }

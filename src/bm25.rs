@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use serde::{Serialize, Deserialize};
 use crate::tokenize;
 use crate::fast_retrieval::{MiniRoaring, PrimeFilter};
 use crate::Tagger;
@@ -13,7 +14,7 @@ pub struct Section {
 }
 
 /// The three BM25 variants supported by the engine.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SearchVariant {
     Classic,
     Plus,

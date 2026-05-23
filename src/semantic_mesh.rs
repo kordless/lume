@@ -359,21 +359,30 @@ impl MarkovChain {
                         for (active_tag, active_weight) in &attention_register {
                             let tag_upper = active_tag.to_uppercase();
                             
-                            // 1. Co-occurrence graph Jaccard boost using actual text token posting lists!
-                            if let Some(ref cb) = c_bytes {
-                                if let (Some(list_c), Some(list_t)) = (token_posting_lists.get(cb), entity_posting_lists.get(&tag_upper)) {
-                                    let jaccard = list_c.jaccard_similarity(list_t);
+                            // Try to resolve the active tag posting list from FST entities, fallback to general tokens
+                            let list_t = entity_posting_lists.get(&tag_upper)
+                                .or_else(|| {
+                                    let tag_toks = crate::tokenize(active_tag);
+                                    tag_toks.first().and_then(|t| token_posting_lists.get(&t.bytes))
+                                });
+                            
+                            if let Some(lt) = list_t {
+                                // 1. Co-occurrence graph Jaccard boost using actual text token posting lists!
+                                if let Some(ref cb) = c_bytes {
+                                    if let Some(list_c) = token_posting_lists.get(cb) {
+                                        let jaccard = list_c.jaccard_similarity(lt);
+                                        if jaccard > 0.0 {
+                                            weight += 80.0 * jaccard * active_weight;
+                                        }
+                                    }
+                                }
+                                
+                                // Also check entity-to-entity posting lists for co-occurrence if candidate is an FST entity!
+                                if let Some(list_c) = entity_posting_lists.get(&c_upper) {
+                                    let jaccard = list_c.jaccard_similarity(lt);
                                     if jaccard > 0.0 {
                                         weight += 80.0 * jaccard * active_weight;
                                     }
-                                }
-                            }
-                            
-                            // Also check entity-to-entity posting lists for co-occurrence!
-                            if let (Some(list_c), Some(list_t)) = (entity_posting_lists.get(&c_upper), entity_posting_lists.get(&tag_upper)) {
-                                let jaccard = list_c.jaccard_similarity(list_t);
-                                if jaccard > 0.0 {
-                                    weight += 80.0 * jaccard * active_weight;
                                 }
                             }
                             

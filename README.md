@@ -1,6 +1,6 @@
 # Lume: Memory for your Documents
 
-A high-performance Rust library and CLI suite featuring an FST-backed phrase matcher, on-demand document indexer, and field-aware BM25 hybrid search engine.
+A high-performance Rust library, native Model Context Protocol (MCP) server, and CLI suite featuring an FST-backed phrase matcher, on-demand document indexer, and field-aware BM25 hybrid search engine.
 
 <div align="center">
 
@@ -47,8 +47,15 @@ Lume crawls, tokenizes, indexes, and queries the corpus in milliseconds:
 DATA="examples/data" cargo run --release --bin search -- examples "monte cristo"
 ```
 
-### 4. Try Hatcher's Semantic Boosting REPL
-Coordinate with a remote neural embedder (`shivvr.nuts.services`) to run conceptual searches:
+### 4. Connect to AI Agents and IDEs via Model Context Protocol (MCP)
+Lume features a native, zero-dependency JSON-RPC 2.0 stdio server, exposing offline tagging, hybrid search, and steered Markov generation tools directly to clients like Cursor or Claude Desktop:
+```bash
+# Start the native stdio MCP server locally
+DATA="examples/data" cargo run --release --bin lume -- mcp
+```
+
+### 5. Try Hatcher's Semantic Boosting REPL
+Coordinate with a remote neural embedder ([shivvr.nuts.services](https://shivvr.nuts.services/)) to run conceptual searches:
 ```bash
 DATA="examples/data" ALPHA=2.0 cargo run --release --bin hatcher-boost -- examples/monte_cristo.md
 ```
@@ -69,7 +76,7 @@ But once you crawl it, where do you put it?
 ### 🧠 The Memory Challenge
 You can't crawl the web fresh every single time you need an answer. Web pages are a type of document memory. Unlike bot or conversational memory (like an LLM remembering that a user's parrot is blue), document memory is about capturing the precise text you just saw. Some of these pages never update, while others update every minute with stock prices or weather data. You need a dedicated, extremely fast local document store to hold and index this memory.
 
-That's when the pieces fell into place. Kord was watching LinkedIn and saw [Steve Harris](https://www.linkedin.com/in/steveharris0) post about porting his zero-dependency JavaScript FST tagger to Rust (released as [fstguardrails](https://github.com/jsclosures/fstguardrails)). Steve had run [Portaltown](https://www.portaltown.com), a search consultancy, and had worked for **Lucidworks**. His background as a U.S. Marine Corps air traffic controller deeply influenced how he designed systems: a pure focus on safety, extreme precision, and bare-metal performance. 
+That's when the pieces fell into place. Kord was watching LinkedIn and saw [Steve Harris](https://www.linkedin.com/in/steveharris0) post about porting his zero-dependency Java FST tagger to Rust (released as [fstguardrails](https://github.com/jsclosures/fstguardrails)). Steve had run [Portaltown](https://www.portaltown.com), a search consultancy, and had worked for **Lucidworks**. His background as a U.S. Marine Corps air traffic controller deeply influenced how he designed systems: a pure focus on safety, extreme precision, and bare-metal performance. 
 
 Kord saw Steve's post and realized: *"That FST tagger is the first part of our document index."*
 
@@ -195,7 +202,7 @@ A mathematical graphing layer crossing FST dictionary tags with document roaring
 ### [Primitive 7] Erik Hatcher's Semantic Boosting & Vector Integration (`hatcher-boost`)
 Our flagship hybrid integration, implementing the two-stage **Semantic Boosting** pattern pioneered by **Erik Hatcher** (co-founder of **Lucidworks**).
 *   **What it does**: Combines the precision and safety of local lexical search with the conceptual awareness of deep-neural ONNX embeddings:
-    1.  **Stage 1 (ONNX Semantic Retrieval & Local Cache)**: Searches our local persistent index (`.lume-semantic-cache.json`) to find query results instantly offline (**<1ms**). On a cache miss, it lazily connects to an ephemeral session on `https://shivvr.nuts.services/` to fetch semantic similarity scores and automatically preserves the query to the local cache.
+    1.  **Stage 1 (ONNX Semantic Retrieval & Local Cache)**: Searches our local persistent index (`.lume-semantic-cache.json`) to find query results instantly offline (**<1ms**). On a cache miss, it lazily connects to an ephemeral session on [shivvr.nuts.services](https://shivvr.nuts.services/) to fetch semantic similarity scores and automatically preserves the query to the local cache.
     2.  **Stage 2 (Local Lexical Scoring)**: Calculates standard BM25 rankings.
     3.  **True Union Blending**: Blends the candidates into a true Set Engine Union. If a document matches lexically, we apply Erik Hatcher's multiplicative boost:
         ```text
@@ -299,6 +306,8 @@ DATA="examples/data" ./target/release/lume mcp
 1. **`lume_tag`**: Extracts FST-dictionary entities from a text block, returning structured offsets, kinds, unique IDs, and outputs as JSON.
 2. **`lume_search`**: Performs field-aware BM25 hybrid search over a file or directory on-the-fly, returning results in Markdown format with inline entity highlights.
 3. **`lume_generate`**: Builds a trigram Markov model over a document on-the-fly and generates guided text with live stochastic attention traces.
+4. **`lume_crawl`**: Stealth crawls any web page (via direct GET or nuts.services backend) into your personal collection, with automatic fallback to the resilient tokenless Firebase API for Hacker News URLs.
+5. **`lume_boost`**: Blends fast local BM25 indexing with dense semantic vector searches via shivvr.nuts.services to execute Erik Hatcher's two-stage concept-boosted hybrid query retrieval.
 
 > [!TIP]
 > **Dynamic Index Caching**: The MCP server automatically caches parsed BM25 index states in a thread-safe global static. By tracking the modification time (`mtime`) of target paths, Lume skips re-indexing when documents haven't changed, reducing subsequent query response times to **under 1ms**.
