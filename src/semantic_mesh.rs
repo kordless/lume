@@ -419,19 +419,8 @@ impl MarkovChain {
                         candidates_w3[next_idx].clone()
                     }
                 } else {
-                    // Jump to a new start pair to maintain natural diversity
-                    if !self.start_words.is_empty() {
-                        let idx = rng.next_range(0, self.start_words.len());
-                        let (start_w1, start_w2) = self.start_words[idx].clone();
-                        w1 = start_w1;
-                        w2 = start_w2;
-                        tokens.push(w1.clone());
-                        tokens.push(w2.clone());
-                        token_count += 2;
-                        continue;
-                    } else {
-                        break;
-                    }
+                    // No unvisited transitions remaining from this state. Terminate generation cleanly.
+                    break;
                 };
 
                 visited_trigrams.insert((w1.clone(), w2.clone(), w3.clone()));
