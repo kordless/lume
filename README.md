@@ -136,17 +136,11 @@ To support lightning-fast document isolation, we represent the posting lists of 
     }
     ```
 
-### [Primitive 3] Gödel Signatures & PrimeFilters
-We use number theory to completely bypass expensive scoring loops for irrelevant documents.
+### [Primitive 3] Probabilistic Prime-Modulo Filters (Gödel Pruning)
+Lume uses modular arithmetic over hashed-prime products to pre-filter document candidates, acting as a Bloom-equivalent signature test with a graceful degradation to a no-op on overflow.
 *   **What it does**:
-    1.  **Gödel Modulo Pruning**: If a query has FST tags, Lume skips candidate documents in $O(1)$ time by verifying if the document's perfect Gödel tag signature is divisible by the query's prime signature:
-        ```text
-        tagSignature % queryTagPrime == 0
-        ```
-    2.  **PrimeFilter Skips**: Before scoring a document, Lume checks a bitset-like signature bucket. If the division has a remainder, the document is guaranteed not to contain the term, and we skip standard HashMap lookups entirely:
-        ```text
-        signatures[bucket] % termPrime == 0
-        ```
+    1.  **Probabilistic Modulo Pruning**: Instead of compiling an open-ended vocabulary into infinite primes, Lume hashes and collapses tag kinds into a fixed 100-prime lookup table in $O(1)$. Because this introduces hash collisions, the divisibility check (`tagSignature % queryTagPrime == 0`) functions as a probabilistic, one-sided fast filter (allowing false positives, but zero false negatives).
+    2.  **Graceful Saturation Degradation**: To prevent arithmetic overflow of the `u128` product, the signature safely saturates to `0` once a document accumulates more than ~15-20 distinct tags. In this saturated state, the check always evaluates to `true` (pass), gracefully falling back to standard scoring and completely bypassing the modulo fast path for long, complex documents.
 
 ### [Primitive 4] Field-Aware BM25 Scoring
 The lexical scoring core implements BM25 ranking, allowing fields (like document titles vs. document bodies) to carry different weights.
