@@ -14,22 +14,6 @@ serde_json = "1.0"
 name = "lume"
 path = "src/main.rs"
 
-[[bin]]
-name = "tag"
-path = "src/bin/tag.rs"
-
-[[bin]]
-name = "tag-server"
-path = "src/bin/tag_server.rs"
-
-[[bin]]
-name = "search"
-path = "src/bin/search.rs"
-
-[[bin]]
-name = "hatcher-boost"
-path = "src/bin/hatcher_boost.rs"
-
 [profile.release]
 lto = true
 codegen-units = 1
