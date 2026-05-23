@@ -267,6 +267,12 @@ pub fn run(mut args: Vec<String>) {
         process::exit(2);
     }
 
+    // Check if shivvr.nuts.services is up. If not, exit immediately.
+    if !check_shivvr_status() {
+        eprintln!("\x1B[1;31mError: shivvr.nuts.services is currently unreachable. Exiting.\x1B[0m");
+        process::exit(1);
+    }
+
     let mut optimize = false;
     if let Some(pos) = args.iter().position(|a| a == "--optimize" || a == "--anneal") {
         args.remove(pos);
@@ -448,40 +454,19 @@ fn print_usage() {
     println!("  \x1B[36m<embedding_source>\x1B[0m    Either:");
     println!("                          - Path to a JSON file containing the 768-dim float array.");
     println!("                          - A raw JSON array inline string (e.g. \"[0.01, -0.02, ...]\").");
-    println!("                          - A math expression (e.g. \"v3.json - v1.json + v2.json\" or \"dummy3 - dummy1 + dummy2\").");
-    println!("                          - \"dummy\" or \"test\" to generate a sample 768-dim dummy vector.");
+    println!("                          - A math expression (e.g. \"v3.json - v1.json + v2.json\").");
+    println!("                          - A raw text string to embed remotely via shivvr.");
     println!("  \x1B[36m[optional_document.md]\x1B[0m Path to a local document to style the reconstruction.");
     println!("                          Lume will FST-tag the inverted text, extract topics, and steer");
     println!("                          stochastic generation over the document corpus.");
     println!();
     println!("\x1B[1;33mEXAMPLES:\x1B[0m");
     println!("  lume invert examples/my_vector.json");
-    println!("  lume invert \"dummy3 - dummy1 + dummy2\" examples/monte_cristo.md");
+    println!("  lume invert \"Why do you think 99% of Teslas...\" examples/monte_cristo.md");
     println!();
 }
 
 fn parse_embedding(source: &str, token: &str) -> Result<Vec<f64>, String> {
-    if source.starts_with("dummy") || source.starts_with("test") {
-        let seed_val: f64 = source
-            .chars()
-            .filter(|c| c.is_ascii_digit())
-            .collect::<String>()
-            .parse::<f64>()
-            .unwrap_or(1.0);
-            
-        let mut mock = vec![0.0; 768];
-        for (i, val) in mock.iter_mut().enumerate() {
-            *val = ((i as f64 * 0.1337 * seed_val).sin()) * 0.05;
-        }
-        let norm: f64 = mock.iter().map(|x| x * x).sum::<f64>().sqrt();
-        if norm > 0.0 {
-            for x in &mut mock {
-                *x /= norm;
-            }
-        }
-        return Ok(mock);
-    }
-
     if source.trim().starts_with('[') {
         match serde_json::from_str::<Vec<f64>>(source) {
             Ok(v) => return Ok(v),
@@ -582,5 +567,18 @@ fn embed_text_remotely(text: &str, token: &str) -> Result<Vec<f64>, String> {
             ureq::delete(&cleanup_url).set("Authorization", &auth_header).call().ok();
             Err(format!("Remote embedding request failed: {}", e))
         }
+    }
+}
+
+
+fn check_shivvr_status() -> bool {
+    let url = "https://shivvr.nuts.services";
+    let agent = ureq::AgentBuilder::new()
+        .timeout(std::time::Duration::from_secs(5))
+        .build();
+    match agent.get(url).call() {
+        Ok(_) => true,
+        Err(ureq::Error::Status(_, _)) => true, // Got a response back (e.g. 401), so it's UP!
+        Err(_) => false, // Network error, timeout, or DNS failure
     }
 }
