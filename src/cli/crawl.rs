@@ -18,6 +18,7 @@ struct CrawlResponse {
 }
 
 #[derive(Deserialize, Debug)]
+#[allow(dead_code)]
 struct HnItem {
     #[serde(default)]
     id: u64,

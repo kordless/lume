@@ -257,7 +257,7 @@ pub fn initialize_and_ingest_session(
             let mut current_chunk = String::new();
             let mut part_num = 1;
             
-            let mut ingest_chunk = |chunk_text: &str, part: usize| -> Result<(), String> {
+            let ingest_chunk = |chunk_text: &str, part: usize| -> Result<(), String> {
                 let text = format!("Header: {} [Part {}]\nContent: {}", sec.title, part, chunk_text);
                 let source_str = orig_idx.to_string();
                 let url = format!("https://shivvr.nuts.services/temp/{}/ingest", sess);
