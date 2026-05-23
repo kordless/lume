@@ -271,13 +271,33 @@ impl MiniRoaring {
 
 // ─── Prime Partitioned Gödel Filter ─────────────────────────────────────
 
-pub const PRIMES: &[u64] = &[
-    2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
-    73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173,
-    179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281,
-    283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409,
-    419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541,
-];
+/// Helper to check if a number is prime.
+pub fn is_prime(n: u64) -> bool {
+    if n <= 1 { return false; }
+    if n <= 3 { return true; }
+    if n.is_multiple_of(2) || n.is_multiple_of(3) { return false; }
+    let mut i = 5;
+    while i * i <= n {
+        if n.is_multiple_of(i) || n.is_multiple_of(i + 2) {
+            return false;
+        }
+        i += 6;
+    }
+    true
+}
+
+/// Helper to get the n-th prime number (1-indexed, so 1st prime is 2, 2nd is 3, etc.)
+pub fn get_nth_prime(n: usize) -> u128 {
+    let mut count = 0;
+    let mut candidate = 1;
+    while count < n {
+        candidate += 1;
+        if is_prime(candidate) {
+            count += 1;
+        }
+    }
+    candidate as u128
+}
 
 /// Simple fast FNV-1a 32-bit hash function
 pub fn fnv1a_hash(bytes: &[u8]) -> u32 {
@@ -289,11 +309,13 @@ pub fn fnv1a_hash(bytes: &[u8]) -> u32 {
     hash
 }
 
-/// A Prime Filter representation of a document's lexical terms and FST tags
+/// A Prime Filter representation of a document's lexical terms and FST tags.
+/// Uses a high-speed bitwise Bloom filter for terms, and a dynamic-prime Gödel
+/// product signature for tag outputs.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PrimeFilter {
-    // 8 buckets of prime-encoded signature lane products
-    pub signatures: [u64; 8],
+    // 64-bit Bloom filter mask for fast lexical term pruning
+    pub term_mask: u64,
     // Perfect Gödel signature for FST tags
     pub tag_signature: u128,
 }
@@ -307,33 +329,31 @@ impl Default for PrimeFilter {
 impl PrimeFilter {
     pub fn new() -> Self {
         Self {
-            signatures: [1; 8],
+            term_mask: 0,
             tag_signature: 1,
         }
     }
 
-    /// Add a vocabulary term to the partitioned signature buckets
+    /// Add a vocabulary term to the 64-bit bitwise Bloom filter mask
     pub fn add_term(&mut self, term_bytes: &[u8]) {
         let h = fnv1a_hash(term_bytes);
-        let bucket = (h as usize) % 8;
-        let prime_idx = (h as usize) % PRIMES.len();
-        let prime = PRIMES[prime_idx];
-
-        if self.signatures[bucket] != 0 {
-            if let Some(val) = self.signatures[bucket].checked_mul(prime) {
-                self.signatures[bucket] = val;
-            } else {
-                self.signatures[bucket] = 0; // Saturated/Overflowed: match all
-            }
-        }
+        let idx1 = h & 0x3F;
+        let idx2 = (h >> 16) & 0x3F;
+        self.term_mask |= (1u64 << idx1) | (1u64 << idx2);
     }
 
-    /// Add a tag category kind to the tag Gödel signature
-    pub fn add_tag_kind(&mut self, kind: &str) {
-        let h = fnv1a_hash(kind.as_bytes());
-        let prime_idx = (h as usize) % PRIMES.len();
-        let prime = PRIMES[prime_idx] as u128;
+    /// Check if a query term is possibly present in the document.
+    /// Returns false if it is definitely NOT present.
+    pub fn test_term(&self, term_bytes: &[u8]) -> bool {
+        let h = fnv1a_hash(term_bytes);
+        let idx1 = h & 0x3F;
+        let idx2 = (h >> 16) & 0x3F;
+        let mask = (1u64 << idx1) | (1u64 << idx2);
+        (self.term_mask & mask) == mask
+    }
 
+    /// Add a tag prime to the tag Gödel signature
+    pub fn add_tag_prime(&mut self, prime: u128) {
         if self.tag_signature != 0 {
             if let Some(val) = self.tag_signature.checked_mul(prime) {
                 self.tag_signature = val;
@@ -343,23 +363,8 @@ impl PrimeFilter {
         }
     }
 
-    /// Check if a query term is possibly present in the document.
-    /// Returns false if it is definitely NOT present.
-    pub fn test_term(&self, term_bytes: &[u8]) -> bool {
-        let h = fnv1a_hash(term_bytes);
-        let bucket = (h as usize) % 8;
-        let prime_idx = (h as usize) % PRIMES.len();
-        let prime = PRIMES[prime_idx];
-
-        self.signatures[bucket] == 0 || self.signatures[bucket].is_multiple_of(prime)
-    }
-
-    /// Check if tag category kind is definitely not present
-    pub fn test_tag_kind(&self, kind: &str) -> bool {
-        let h = fnv1a_hash(kind.as_bytes());
-        let prime_idx = (h as usize) % PRIMES.len();
-        let prime = PRIMES[prime_idx] as u128;
-
+    /// Check if a tag prime is possibly present in the document.
+    pub fn test_tag_prime(&self, prime: u128) -> bool {
         self.tag_signature == 0 || self.tag_signature.is_multiple_of(prime)
     }
 }
@@ -443,9 +448,11 @@ mod tests {
         assert!(filter.test_term(b"apple"));
         assert!(filter.test_term(b"banana"));
         
-        filter.add_tag_kind("intent");
-        assert!(filter.test_tag_kind("intent"));
-        assert!(!filter.test_tag_kind("offensive_en"));
+        filter.add_tag_prime(2);
+        filter.add_tag_prime(3);
+        assert!(filter.test_tag_prime(2));
+        assert!(filter.test_tag_prime(3));
+        assert!(!filter.test_tag_prime(5));
 
         // Test overflow robustness: verify that adding many terms degrades to true (match all) but never false negatives
         let mut overflow_filter = PrimeFilter::new();

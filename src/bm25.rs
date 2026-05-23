@@ -68,6 +68,7 @@ pub struct Bm25Index {
     // Native roaring bitmaps and prime/Gödel partitioned signature filters
     pub posting_lists: HashMap<Vec<u8>, MiniRoaring>,
     pub prime_filters: Vec<PrimeFilter>,
+    pub tag_prime_map: HashMap<String, u128>,
 
     // Entity information for Semantic Mesh (Option A)
     pub entity_posting_lists: HashMap<String, MiniRoaring>,
@@ -152,6 +153,23 @@ pub fn parse_markdown(content: &str) -> Vec<Section> {
 impl Bm25Index {
     /// Constructs a search index over a collection of Markdown sections.
     pub fn build(sections: Vec<Section>, tagger: Option<&Tagger>) -> Self {
+        let mut tag_prime_map = HashMap::new();
+        if let Some(t) = tagger {
+            let mut unique_tags = std::collections::BTreeSet::new();
+            for sec in &sections {
+                for tag in t.tag(&sec.title) {
+                    unique_tags.insert(tag.output.clone());
+                }
+                for tag in t.tag(&sec.body) {
+                    unique_tags.insert(tag.output.clone());
+                }
+            }
+            for (idx, tag_out) in unique_tags.into_iter().enumerate() {
+                let prime = crate::fast_retrieval::get_nth_prime(idx + 1);
+                tag_prime_map.insert(tag_out, prime);
+            }
+        }
+
         let num_docs = sections.len();
         let mut title_tfs = Vec::with_capacity(num_docs);
         let mut body_tfs = Vec::with_capacity(num_docs);
@@ -215,7 +233,9 @@ impl Bm25Index {
             if let Some(t) = tagger {
                 let title_tags = t.tag(&sec.title);
                 for tag in title_tags {
-                    pf.add_tag_kind(&tag.kind);
+                    if let Some(&prime) = tag_prime_map.get(&tag.output) {
+                        pf.add_tag_prime(prime);
+                    }
                     
                     // Track for semantic mesh (Option A)
                     entity_posting_lists
@@ -243,7 +263,9 @@ impl Bm25Index {
                 }
                 let body_tags = t.tag(&sec.body);
                 for tag in body_tags {
-                    pf.add_tag_kind(&tag.kind);
+                    if let Some(&prime) = tag_prime_map.get(&tag.output) {
+                        pf.add_tag_prime(prime);
+                    }
                     
                     // Track for semantic mesh (Option A)
                     entity_posting_lists
@@ -298,6 +320,7 @@ impl Bm25Index {
             body_dfs,
             posting_lists,
             prime_filters,
+            tag_prime_map,
             entity_posting_lists,
             entity_kinds,
             entity_labels,
@@ -341,10 +364,12 @@ impl Bm25Index {
         if let Some(t) = tagger {
             let query_tags = t.tag(query);
             for tag in &query_tags {
-                let h = crate::fast_retrieval::fnv1a_hash(tag.kind.as_bytes());
-                let prime_idx = (h as usize) % crate::fast_retrieval::PRIMES.len();
-                let prime = crate::fast_retrieval::PRIMES[prime_idx] as u128;
-                query_tag_primes.push(prime);
+                if let Some(&prime) = self.tag_prime_map.get(&tag.output) {
+                    query_tag_primes.push(prime);
+                } else {
+                    let dummy_prime = crate::fast_retrieval::get_nth_prime(self.tag_prime_map.len() + 2);
+                    query_tag_primes.push(dummy_prime);
+                }
             }
         }
 
@@ -393,10 +418,10 @@ impl Bm25Index {
 
             let pf = &self.prime_filters[doc_idx];
             
-            // Tag signature verification: Candidate must contain all query tag kinds if present
+            // Tag signature verification: Candidate must contain all query tag outputs if present
             let mut tag_match = true;
             for &prime in &query_tag_primes {
-                if !pf.tag_signature.is_multiple_of(prime) {
+                if !pf.test_tag_prime(prime) {
                     tag_match = false;
                     break;
                 }
