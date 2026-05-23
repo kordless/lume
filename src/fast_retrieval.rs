@@ -13,6 +13,12 @@ pub struct MiniRoaring {
     pub containers: HashMap<u16, Container>,
 }
 
+impl Default for MiniRoaring {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl MiniRoaring {
     pub fn new() -> Self {
         Self {
@@ -292,6 +298,12 @@ pub struct PrimeFilter {
     pub tag_signature: u128,
 }
 
+impl Default for PrimeFilter {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PrimeFilter {
     pub fn new() -> Self {
         Self {
@@ -339,7 +351,7 @@ impl PrimeFilter {
         let prime_idx = (h as usize) % PRIMES.len();
         let prime = PRIMES[prime_idx];
 
-        self.signatures[bucket] == 0 || self.signatures[bucket] % prime == 0
+        self.signatures[bucket] == 0 || self.signatures[bucket].is_multiple_of(prime)
     }
 
     /// Check if tag category kind is definitely not present
@@ -348,7 +360,7 @@ impl PrimeFilter {
         let prime_idx = (h as usize) % PRIMES.len();
         let prime = PRIMES[prime_idx] as u128;
 
-        self.tag_signature == 0 || self.tag_signature % prime == 0
+        self.tag_signature == 0 || self.tag_signature.is_multiple_of(prime)
     }
 }
 

@@ -228,7 +228,7 @@ fn build_sections_from_path(path: &Path) -> Result<Vec<Section>, String> {
 
                 let mut body_parts = Vec::new();
                 for (col_idx, value) in cells.iter().enumerate() {
-                    let col_name = headers.get(col_idx).map(|s| s.trim().as_ref()).unwrap_or("column");
+                    let col_name = headers.get(col_idx).map(|s| s.trim()).unwrap_or("column");
                     body_parts.push(format!("{}: {}", col_name, value.trim()));
                 }
                 let body = body_parts.join(" | ");
@@ -356,7 +356,7 @@ fn get_snippet_and_spans(
     let first_span = &spans[0];
     let start_char = first_span.start;
 
-    let mut window_start = if start_char > 100 { start_char - 100 } else { 0 };
+    let mut window_start = start_char.saturating_sub(100);
 
     while window_start > 0 && !text.is_char_boundary(window_start) {
         window_start -= 1;
@@ -1026,7 +1026,7 @@ pub fn run(_args: Vec<String>) {
                                                 is_error: true,
                                             }
                                         } else {
-                                            let index_ref = index.as_ref().map(|arc| &**arc);
+                                            let index_ref = index.as_deref();
                                             match crate::inversion::execute_steered_inversion(
                                                 &embedding,
                                                 max_length,

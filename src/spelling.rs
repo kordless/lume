@@ -38,10 +38,7 @@ pub fn levenshtein_distance(a: &str, b: &str) -> usize {
         return len_a;
     }
     
-    let mut dp = vec![0; len_b + 1];
-    for j in 0..=len_b {
-        dp[j] = j;
-    }
+    let mut dp: Vec<usize> = (0..=len_b).collect();
     
     for i in 1..=len_a {
         let mut prev = dp[0];
@@ -126,7 +123,7 @@ impl SpellIndex {
             for trig in trigs {
                 trigram_postings
                     .entry(trig)
-                    .or_insert_with(MiniRoaring::new)
+                    .or_default()
                     .insert(idx as u32);
             }
         }

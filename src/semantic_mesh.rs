@@ -9,6 +9,12 @@ pub struct SimpleRng {
     state: u64,
 }
 
+impl Default for SimpleRng {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl SimpleRng {
     pub fn new() -> Self {
         let nanos = SystemTime::now()
@@ -266,6 +272,7 @@ impl MarkovChain {
     }
 
     /// Generates steered text utilizing an FST tagger and co-occurrence posting lists for local attention feedback.
+    #[allow(clippy::type_complexity)]
     pub fn generate_steered(
         &self,
         seed_word: Option<&str>,
@@ -317,7 +324,7 @@ impl MarkovChain {
         tokens.push(w2.clone());
 
         // Tag initial words
-        if let Some(ref t) = tagger {
+        if let Some(t) = tagger {
             let initial_text = reconstruct_spaces(&tokens);
             let matched = t.tag(&initial_text);
             for tag in matched {
@@ -431,7 +438,7 @@ impl MarkovChain {
                 tokens.push(w3.clone());
 
                 // Feed newly generated token back to FST Tagger to detect active entities
-                if let Some(ref t) = tagger {
+                if let Some(t) = tagger {
                     let recent_len = tokens.len().min(5);
                     let recent_tokens = &tokens[tokens.len() - recent_len..];
                     let recent_text = reconstruct_spaces(recent_tokens);

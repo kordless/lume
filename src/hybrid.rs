@@ -298,8 +298,8 @@ pub fn initialize_and_ingest_session(
                     if para.len() > 25000 {
                         let lines: Vec<&str> = para.split('\n').collect();
                         for line in lines {
-                            if current_chunk.len() + line.len() > 25000 {
-                                if !current_chunk.is_empty() {
+                            if current_chunk.len() + line.len() > 25000
+                                && !current_chunk.is_empty() {
                                     if let Err(e) = ingest_chunk(&current_chunk, part_num) {
                                         cleanup_session(&sess, token).ok();
                                         delete_cached_session();
@@ -308,7 +308,6 @@ pub fn initialize_and_ingest_session(
                                     current_chunk.clear();
                                     part_num += 1;
                                 }
-                            }
                             if !current_chunk.is_empty() {
                                 current_chunk.push('\n');
                             }

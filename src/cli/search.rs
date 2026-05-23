@@ -56,11 +56,7 @@ pub fn run(mut args: Vec<String>) {
     std::panic::set_hook(Box::new(|info| {
         let msg = if let Some(s) = info.payload().downcast_ref::<&str>() {
             Some(*s)
-        } else if let Some(s) = info.payload().downcast_ref::<String>() {
-            Some(s.as_str())
-        } else {
-            None
-        };
+        } else { info.payload().downcast_ref::<String>().map(|s| s.as_str()) };
         
         if let Some(m) = msg {
             if m.contains("failed printing to stdout") || m.contains("The pipe is being closed") || m.contains("BrokenPipe") {
@@ -212,7 +208,7 @@ pub fn run(mut args: Vec<String>) {
                 // Formulate a detailed and highly searchable body representing all fields in key-value format
                 let mut body_parts = Vec::new();
                 for (col_idx, value) in cells.iter().enumerate() {
-                    let col_name = headers.get(col_idx).map(|s| s.trim().as_ref()).unwrap_or("column");
+                    let col_name = headers.get(col_idx).map(|s| s.trim()).unwrap_or("column");
                     body_parts.push(format!("{}: {}", col_name, value.trim()));
                 }
                 let body = body_parts.join(" | ");
@@ -434,7 +430,7 @@ fn execute_search(
     }
     
     // Tag query itself with FST if enabled
-    if let Some(ref t) = tagger {
+    if let Some(t) = tagger {
         let query_tags = t.tag(query);
         if !query_tags.is_empty() {
             eprint!("  \x1B[32m└─ Matched Query Entities:\x1B[0m ");
@@ -524,7 +520,7 @@ fn execute_search(
         }
         
         // Match 2: FST entity tags matches
-        if let Some(ref t) = tagger {
+        if let Some(t) = tagger {
             let doc_tags = t.tag(&section.body);
             for tag in doc_tags {
                 spans.push(HighlightSpan {
@@ -549,6 +545,7 @@ fn execute_search(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn run_repl(
     index: &Bm25Index,
     tagger: Option<&Tagger>,
@@ -613,7 +610,7 @@ fn run_repl(
                 println!();
                 continue;
             } else if cmd == "generate" {
-                let seed = parts.get(1).map(|s| *s);
+                let seed = parts.get(1).copied();
                 let injected_tags: Vec<String> = parts.iter().skip(2).map(|s| s.to_string()).collect();
                 execute_generate(index, tagger, seed, &injected_tags, doc_name, is_csv);
                 println!();
@@ -650,7 +647,7 @@ fn run_repl(
 }
 
 fn get_ai_name(doc_name: &str, is_csv: bool) -> String {
-    let clean = doc_name.replace('_', " ").replace('-', " ");
+    let clean = doc_name.replace(['_', '-'], " ");
     let mut capitalized = String::new();
     for word in clean.split_whitespace() {
         if !capitalized.is_empty() {
@@ -779,7 +776,7 @@ fn run_chat_mode(
             if !query_tokens.is_empty() {
                 let first_term = String::from_utf8_lossy(&query_tokens[0].bytes).to_lowercase();
                 if let Some(pos) = body.to_lowercase().find(&first_term) {
-                    start_idx = if pos > 50 { pos - 50 } else { 0 };
+                    start_idx = pos.saturating_sub(50);
                     while start_idx > 0 && !body.is_char_boundary(start_idx) {
                         start_idx -= 1;
                     }
@@ -887,7 +884,7 @@ fn get_snippet_and_spans(
     let first_span = &spans[0];
     let start_char = first_span.start;
     
-    let mut window_start = if start_char > 100 { start_char - 100 } else { 0 };
+    let mut window_start = start_char.saturating_sub(100);
     
     // Align window_start to a valid UTF-8 character boundary walking backward
     while window_start > 0 && !text.is_char_boundary(window_start) {

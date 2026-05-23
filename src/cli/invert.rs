@@ -470,8 +470,8 @@ fn parse_embedding(source: &str, token: &str) -> Result<Vec<f64>, String> {
             .unwrap_or(1.0);
             
         let mut mock = vec![0.0; 768];
-        for i in 0..768 {
-            mock[i] = ((i as f64 * 0.1337 * seed_val).sin()) * 0.05;
+        for (i, val) in mock.iter_mut().enumerate() {
+            *val = ((i as f64 * 0.1337 * seed_val).sin()) * 0.05;
         }
         let norm: f64 = mock.iter().map(|x| x * x).sum::<f64>().sqrt();
         if norm > 0.0 {

@@ -185,7 +185,7 @@ impl Bm25Index {
             let mut t_tf = HashMap::new();
             for tok in &t_toks {
                 *t_tf.entry(tok.bytes.clone()).or_insert(0) += 1;
-                posting_lists.entry(tok.bytes.clone()).or_insert_with(MiniRoaring::new).insert(doc_id);
+                posting_lists.entry(tok.bytes.clone()).or_default().insert(doc_id);
             }
             for tok_bytes in t_tf.keys() {
                 *title_dfs.entry(tok_bytes.clone()).or_insert(0) += 1;
@@ -196,7 +196,7 @@ impl Bm25Index {
             let mut b_tf = HashMap::new();
             for tok in &b_toks {
                 *b_tf.entry(tok.bytes.clone()).or_insert(0) += 1;
-                posting_lists.entry(tok.bytes.clone()).or_insert_with(MiniRoaring::new).insert(doc_id);
+                posting_lists.entry(tok.bytes.clone()).or_default().insert(doc_id);
             }
             for tok_bytes in b_tf.keys() {
                 *body_dfs.entry(tok_bytes.clone()).or_insert(0) += 1;
@@ -220,7 +220,7 @@ impl Bm25Index {
                     // Track for semantic mesh (Option A)
                     entity_posting_lists
                         .entry(tag.output.clone())
-                        .or_insert_with(MiniRoaring::new)
+                        .or_default()
                         .insert(doc_id);
                     entity_kinds.insert(tag.output.clone(), tag.kind.clone());
                     
@@ -232,8 +232,8 @@ impl Bm25Index {
                         }
                         std::collections::hash_map::Entry::Occupied(mut o) => {
                             let curr = o.get();
-                            let is_better = (tag.surface.chars().next().map_or(false, |c| c.is_uppercase()) &&
-                                            !curr.chars().next().map_or(false, |c| c.is_uppercase())) ||
+                            let is_better = (tag.surface.chars().next().is_some_and(|c| c.is_uppercase()) &&
+                                            !curr.chars().next().is_some_and(|c| c.is_uppercase())) ||
                                             tag.surface.len() > curr.len();
                             if is_better {
                                 o.insert(tag.surface.clone());
@@ -248,7 +248,7 @@ impl Bm25Index {
                     // Track for semantic mesh (Option A)
                     entity_posting_lists
                         .entry(tag.output.clone())
-                        .or_insert_with(MiniRoaring::new)
+                        .or_default()
                         .insert(doc_id);
                     entity_kinds.insert(tag.output.clone(), tag.kind.clone());
                     
@@ -260,8 +260,8 @@ impl Bm25Index {
                         }
                         std::collections::hash_map::Entry::Occupied(mut o) => {
                             let curr = o.get();
-                            let is_better = (tag.surface.chars().next().map_or(false, |c| c.is_uppercase()) &&
-                                            !curr.chars().next().map_or(false, |c| c.is_uppercase())) ||
+                            let is_better = (tag.surface.chars().next().is_some_and(|c| c.is_uppercase()) &&
+                                            !curr.chars().next().is_some_and(|c| c.is_uppercase())) ||
                                             tag.surface.len() > curr.len();
                             if is_better {
                                 o.insert(tag.surface.clone());
@@ -396,7 +396,7 @@ impl Bm25Index {
             // Tag signature verification: Candidate must contain all query tag kinds if present
             let mut tag_match = true;
             for &prime in &query_tag_primes {
-                if pf.tag_signature % prime != 0 {
+                if !pf.tag_signature.is_multiple_of(prime) {
                     tag_match = false;
                     break;
                 }
