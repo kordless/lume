@@ -82,7 +82,7 @@ fn handle(stream: TcpStream, tagger: &Tagger) -> std::io::Result<()> {
     if reader.read_line(&mut request_line)? == 0 {
         return Ok(());
     }
-    let mut parts = request_line.trim_end().split_whitespace();
+    let mut parts = request_line.split_whitespace();
     let method = parts.next().unwrap_or("").to_string();
     let target = parts.next().unwrap_or("").to_string();
 

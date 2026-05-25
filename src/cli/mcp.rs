@@ -153,9 +153,15 @@ fn build_sections_from_path(path: &Path) -> Result<Vec<Section>, String> {
 
         let mut dir_sections = Vec::new();
         for file_path in files {
-            let filename = file_path.file_name()
-                .and_then(|s| s.to_str())
-                .unwrap_or("")
+            let filename = file_path.strip_prefix(path)
+                .ok()
+                .and_then(|p| p.to_str())
+                .unwrap_or_else(|| {
+                    file_path.file_name()
+                        .and_then(|s| s.to_str())
+                        .unwrap_or("")
+                })
+                .replace("\\", "/")
                 .to_string();
 
             let content = match fs::read_to_string(&file_path) {
@@ -222,7 +228,7 @@ fn build_sections_from_path(path: &Path) -> Result<Vec<Section>, String> {
 
                 let mut body_parts = Vec::new();
                 for (col_idx, value) in cells.iter().enumerate() {
-                    let col_name = headers.get(col_idx).map(|s| s.trim().as_ref()).unwrap_or("column");
+                    let col_name = headers.get(col_idx).map(|s| s.trim()).unwrap_or("column");
                     body_parts.push(format!("{}: {}", col_name, value.trim()));
                 }
                 let body = body_parts.join(" | ");
@@ -350,7 +356,7 @@ fn get_snippet_and_spans(
     let first_span = &spans[0];
     let start_char = first_span.start;
 
-    let mut window_start = if start_char > 100 { start_char - 100 } else { 0 };
+    let mut window_start = start_char.saturating_sub(100);
 
     while window_start > 0 && !text.is_char_boundary(window_start) {
         window_start -= 1;
@@ -479,9 +485,79 @@ fn get_tools_list() -> serde_json::Value {
                         "max_tokens": {
                             "type": "integer",
                             "description": "Optional maximum number of tokens to generate (default 150)."
+                        },
+                        "injected_tags": {
+                            "type": "array",
+                            "items": { "type": "string" },
+                            "description": "Optional actor or location tags (e.g. ['DANTES', 'CHATEAUDIF']) to inject and persistently steer the text synthesis."
+                        },
+                        "attention_tags": {
+                            "type": "array",
+                            "items": { "type": "string" },
+                            "description": "Alias for injected_tags. Optional actor, location, or thematic tags to inject and persistently steer the text synthesis."
+                        },
+                        "tags": {
+                            "type": "array",
+                            "items": { "type": "string" },
+                            "description": "Alias for injected_tags. Optional actor, location, or thematic tags to inject and persistently steer the text synthesis."
                         }
                     },
                     "required": ["target_path"]
+                }
+            },
+            {
+                "name": "lume_crawl",
+                "description": "Stealth crawl any web page via direct GET or nuts.services backend, rendering clean reader-mode markdown. Fully supports Hacker News URLs using a resilient tokenless Firebase API fallback.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "url": {
+                            "type": "string",
+                            "description": "The URL of the web page to crawl."
+                        }
+                    },
+                    "required": ["url"]
+                }
+            },
+            {
+                "name": "lume_boost",
+                "description": "Perform deep hybrid semantic search by blending fast local lexical BM25 indexing with dense semantic vector searches via shivvr.nuts.services.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "target_path": {
+                            "type": "string",
+                            "description": "Absolute or relative path to a Markdown file, text file, CSV file, or directory to search."
+                        },
+                        "query": {
+                            "type": "string",
+                            "description": "The hybrid semantic query terms to search for."
+                        }
+                    },
+                    "required": ["target_path", "query"]
+                }
+            },
+            {
+                "name": "lume_invert",
+                "description": "Premium neural vector inversion (vec2text) tool. Reconstructs the original text from a 768-dimensional GTR-T5 embedding via shivvr.nuts.services, and optionally triggers styled stochastically guided local text synthesis.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "embedding": {
+                            "type": "array",
+                            "items": { "type": "number" },
+                            "description": "The 768-dimensional float embedding vector to invert."
+                        },
+                        "max_length": {
+                            "type": "integer",
+                            "description": "Optional maximum length of the reconstructed text (default 64)."
+                        },
+                        "steer_target_path": {
+                            "type": "string",
+                            "description": "Optional file path to a local document. If provided, Lume will tag the reconstructed text, extract themes, and run guided steered local text generation over this document."
+                        }
+                    },
+                    "required": ["embedding"]
                 }
             }
         ]
@@ -622,11 +698,16 @@ fn execute_search(
     Ok(serde_json::Value::String(markdown))
 }
 
+
+
+
+
 fn execute_generate(
     tagger: Option<&Tagger>,
     target_path: &str,
     seed: Option<&str>,
     max_tokens: Option<usize>,
+    injected_tags: Option<Vec<String>>,
 ) -> Result<serde_json::Value, String> {
     let (index, _) = get_or_build_index(target_path, tagger)?;
 
@@ -637,12 +718,15 @@ fn execute_generate(
 
     let chain = MarkovChain::build(&bodies);
     let tokens_to_gen = max_tokens.unwrap_or(150);
+    let tags = injected_tags.unwrap_or_default();
 
     let (text, attention_history) = chain.generate_steered(
         seed,
         tokens_to_gen,
         tagger,
         &index.entity_posting_lists,
+        &index.posting_lists,
+        &tags,
     );
 
     let mut markdown = String::new();
@@ -809,7 +893,12 @@ pub fn run(_args: Vec<String>) {
                                 let target_path = p.arguments.get("target_path").and_then(|v| v.as_str()).unwrap_or("");
                                 let seed = p.arguments.get("seed").and_then(|v| v.as_str());
                                 let max_tokens = p.arguments.get("max_tokens").and_then(|v| v.as_u64()).map(|n| n as usize);
-                                match execute_generate(tagger.as_ref(), target_path, seed, max_tokens) {
+                                let injected_tags = p.arguments.get("injected_tags")
+                                    .or_else(|| p.arguments.get("attention_tags"))
+                                    .or_else(|| p.arguments.get("tags"))
+                                    .and_then(|v| v.as_array())
+                                    .map(|arr| arr.iter().filter_map(|x| x.as_str().map(|s| s.to_string())).collect::<Vec<String>>());
+                                match execute_generate(tagger.as_ref(), target_path, seed, max_tokens, injected_tags) {
                                     Ok(json_val) => ToolCallResult {
                                         content: vec![McpContent {
                                             content_type: "text".to_string(),
@@ -824,6 +913,148 @@ pub fn run(_args: Vec<String>) {
                                         }],
                                         is_error: true,
                                     },
+                                }
+                            }
+                            "lume_crawl" => {
+                                let url = p.arguments.get("url").and_then(|v| v.as_str()).unwrap_or("");
+                                match crate::cli::crawl::crawl_url(url) {
+                                    Ok((_filename, content)) => ToolCallResult {
+                                        content: vec![McpContent {
+                                            content_type: "text".to_string(),
+                                            text: content,
+                                        }],
+                                        is_error: false,
+                                    },
+                                    Err(err_msg) => ToolCallResult {
+                                        content: vec![McpContent {
+                                            content_type: "text".to_string(),
+                                            text: format!("Error: {}", err_msg),
+                                        }],
+                                        is_error: true,
+                                    },
+                                }
+                            }
+                            "lume_boost" => {
+                                let target_path = p.arguments.get("target_path").and_then(|v| v.as_str()).unwrap_or("");
+                                let query = p.arguments.get("query").and_then(|v| v.as_str()).unwrap_or("");
+                                match get_or_build_index(target_path, tagger.as_ref()) {
+                                    Ok((index, _spell)) => {
+                                        match crate::hybrid::execute_hybrid_search(
+                                            &index,
+                                            tagger.as_ref(),
+                                            target_path,
+                                            query,
+                                        ) {
+                                            Ok(result) => ToolCallResult {
+                                                content: vec![McpContent {
+                                                    content_type: "text".to_string(),
+                                                    text: result.to_markdown(),
+                                                }],
+                                                is_error: false,
+                                            },
+                                            Err(err_msg) => ToolCallResult {
+                                                content: vec![McpContent {
+                                                    content_type: "text".to_string(),
+                                                    text: format!("Error during hybrid search: {}", err_msg),
+                                                }],
+                                                is_error: true,
+                                            },
+                                        }
+                                    }
+                                    Err(err_msg) => ToolCallResult {
+                                        content: vec![McpContent {
+                                            content_type: "text".to_string(),
+                                            text: format!("Error building index: {}", err_msg),
+                                        }],
+                                        is_error: true,
+                                    },
+                                }
+                            }
+                            "lume_invert" => {
+                                let embedding_val = p.arguments.get("embedding");
+                                let max_length = p.arguments.get("max_length").and_then(|v| v.as_u64()).map(|v| v as usize);
+                                let steer_target_path = p.arguments.get("steer_target_path").and_then(|v| v.as_str());
+
+                                let mut embedding = Vec::new();
+                                if let Some(serde_json::Value::Array(arr)) = embedding_val {
+                                    for v in arr {
+                                        if let Some(num) = v.as_f64() {
+                                            embedding.push(num);
+                                        }
+                                    }
+                                }
+
+                                if embedding.is_empty() {
+                                    ToolCallResult {
+                                        content: vec![McpContent {
+                                            content_type: "text".to_string(),
+                                            text: "Error: The 'embedding' field must be a non-empty array of floats.".to_string(),
+                                        }],
+                                        is_error: true,
+                                    }
+                                } else {
+                                    let token = match crate::hybrid::load_nuts_token() {
+                                        Some(tok) => tok,
+                                        None => "NUTS_SERVICES_TOKEN not found in environment or .env file.".to_string(),
+                                    };
+
+                                    if token.starts_with("NUTS_SERVICES_TOKEN not found") {
+                                        ToolCallResult {
+                                            content: vec![McpContent {
+                                                content_type: "text".to_string(),
+                                                text: token,
+                                            }],
+                                            is_error: true,
+                                        }
+                                    } else {
+                                        let mut index = None;
+                                        let mut index_err = None;
+
+                                        if let Some(target_path) = steer_target_path {
+                                            match get_or_build_index(target_path, tagger.as_ref()) {
+                                                Ok((idx, _spell)) => index = Some(idx),
+                                                Err(err_msg) => index_err = Some(format!("Error building index for steer target: {}", err_msg)),
+                                            }
+                                        }
+
+                                        if let Some(err) = index_err {
+                                            ToolCallResult {
+                                                content: vec![McpContent {
+                                                    content_type: "text".to_string(),
+                                                    text: err,
+                                                }],
+                                                is_error: true,
+                                            }
+                                        } else {
+                                            let index_ref = index.as_deref();
+                                            match crate::inversion::execute_steered_inversion(
+                                                &embedding,
+                                                max_length,
+                                                &token,
+                                                index_ref,
+                                                tagger.as_ref(),
+                                                None,
+                                            ) {
+                                                Ok(res) => {
+                                                    let markdown = res.to_markdown(steer_target_path);
+                                                    ToolCallResult {
+                                                        content: vec![McpContent {
+                                                            content_type: "text".to_string(),
+                                                            text: markdown,
+                                                        }],
+                                                        is_error: false,
+                                                    }
+                                                }
+                                                Err(err_msg) => ToolCallResult {
+                                                    content: vec![McpContent {
+                                                        content_type: "text".to_string(),
+                                                        text: format!("Error performing inversion: {}", err_msg),
+                                                    }],
+                                                    is_error: true,
+                                                },
+                                            }
+                                        }
+                                    }
                                 }
                             }
                             unknown => ToolCallResult {

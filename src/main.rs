@@ -22,13 +22,18 @@ fn main() {
             lume::cli::search::run(sub_args);
         }
         "hatcher-boost" | "hatcher" | "boost" => {
-            lume::cli::hatcher_boost::run(sub_args);
+            let mut search_args = sub_args;
+            search_args.push("--hybrid".to_string());
+            lume::cli::search::run(search_args);
         }
         "mcp" => {
             lume::cli::mcp::run(sub_args);
         }
         "crawl" => {
             lume::cli::crawl::run(sub_args);
+        }
+        "invert" => {
+            lume::cli::invert::run(sub_args);
         }
         "-h" | "--help" | "help" => {
             print_help();
@@ -59,10 +64,12 @@ fn print_help() {
     println!("  \x1B[1;32mtag\x1B[0m           Tag text locally using FST dictionary");
     println!("  \x1B[1;32mtag-server\x1B[0m    Run an HTTP tagger server (default port 8282)");
     println!("  \x1B[1;32msearch\x1B[0m        Run BM25 hybrid search REPL or one-shot command");
-    println!("  \x1B[1;32mhatcher-boost\x1B[0m Hatcher two-stage semantic-lexical boosting engine");
+    println!("  \x1B[1;32mhatcher-boost\x1B[0m HATCHERIK two-stage semantic-lexical boosting engine");
     println!("                \x1B[38;5;244m(Aliases: hatcher, boost)\x1B[0m");
     println!("  \x1B[1;32mmcp\x1B[0m           Run high-performance Model Context Protocol (MCP) server");
-    println!("  \x1B[1;32mcrawl\x1B[0m         Crawl a webpage to markdown via grub.nuts.services");
+    println!("  \x1B[1;32mcrawl\x1B[0m         Crawl a webpage to markdown via grub.nuts.services
+  \x1B[1;32minvert\x1B[0m        Invert a neural vector embedding to text w/ optional steered synthesis
+");
     println!();
     println!("\x1B[1;33mEXAMPLES:\x1B[0m");
     println!("  \x1B[38;5;244m# Start an interactive hybrid search REPL on Monte Cristo:\x1B[0m");
@@ -74,14 +81,17 @@ fn print_help() {
     println!("  \x1B[38;5;244m# Start the high-performance local tagger API server:\x1B[0m");
     println!("  DATA=\"examples/data\" PORT=8282 lume tag-server");
     println!();
-    println!("  \x1B[38;5;244m# Run Erik Hatcher's dense semantic-boost hybrid search REPL:\x1B[0m");
+    println!("  \x1B[38;5;244m# Run Erik Hatcher's dense HATCHERIK semantic-boost hybrid search REPL:\x1B[0m");
     println!("  DATA=\"examples/data\" lume boost examples/monte_cristo.md");
     println!();
     println!("  \x1B[38;5;244m# Start the high-performance local Model Context Protocol (MCP) server:\x1B[0m");
     println!("  DATA=\"examples/data\" lume mcp");
     println!();
-    println!("  \x1B[38;5;244m# Crawl a webpage to your personal search engine collection:\x1B[0m");
-    println!("  lume crawl https://news.ycombinator.com");
-    println!("────────────────────────────────────────────────────────────────────────");
+    println!("  \x1B[38;5;244m# Crawl a webpage to your personal search engine collection:\x1B[0m
+  lume crawl https://news.ycombinator.com
+
+  \x1B[38;5;244m# Reconstruct a neural vector embedding using premium inversion:\x1B[0m
+  NUTS_SERVICES_TOKEN=your_token lume invert dummy examples/monte_cristo.md
+──────────────────────────────────────────────────────────────────────────────────────");
     println!();
 }

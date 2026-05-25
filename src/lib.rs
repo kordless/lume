@@ -26,6 +26,8 @@ pub mod fast_retrieval;
 pub mod semantic_mesh;
 pub mod regex;
 pub mod spelling;
+pub mod inversion;
+pub mod hybrid;
 pub mod cli;
 
 /// Token separator used inside FST keys. Matches Lucene's
@@ -190,12 +192,12 @@ impl Tagger {
         for (key, idx) in &keyed {
             builder
                 .insert(key, *idx)
-                .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+                .map_err(io::Error::other)?;
         }
         let bytes = builder
             .into_inner()
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
-        let fst = Fst::new(bytes).map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+            .map_err(io::Error::other)?;
+        let fst = Fst::new(bytes).map_err(io::Error::other)?;
         Ok(Self { fst, groups, regex_patterns, phrases })
     }
 

@@ -56,11 +56,7 @@ pub fn run(mut args: Vec<String>) {
     std::panic::set_hook(Box::new(|info| {
         let msg = if let Some(s) = info.payload().downcast_ref::<&str>() {
             Some(*s)
-        } else if let Some(s) = info.payload().downcast_ref::<String>() {
-            Some(s.as_str())
-        } else {
-            None
-        };
+        } else { info.payload().downcast_ref::<String>().map(|s| s.as_str()) };
         
         if let Some(m) = msg {
             if m.contains("failed printing to stdout") || m.contains("The pipe is being closed") || m.contains("BrokenPipe") {
@@ -130,9 +126,15 @@ pub fn run(mut args: Vec<String>) {
 
         let mut dir_sections = Vec::new();
         for file_path in files {
-            let filename = file_path.file_name()
-                .and_then(|s| s.to_str())
-                .unwrap_or("")
+            let filename = file_path.strip_prefix(path)
+                .ok()
+                .and_then(|p| p.to_str())
+                .unwrap_or_else(|| {
+                    file_path.file_name()
+                        .and_then(|s| s.to_str())
+                        .unwrap_or("")
+                })
+                .replace("\\", "/")
                 .to_string();
             
             let content = match fs::read_to_string(&file_path) {
@@ -206,7 +208,7 @@ pub fn run(mut args: Vec<String>) {
                 // Formulate a detailed and highly searchable body representing all fields in key-value format
                 let mut body_parts = Vec::new();
                 for (col_idx, value) in cells.iter().enumerate() {
-                    let col_name = headers.get(col_idx).map(|s| s.trim().as_ref()).unwrap_or("column");
+                    let col_name = headers.get(col_idx).map(|s| s.trim()).unwrap_or("column");
                     body_parts.push(format!("{}: {}", col_name, value.trim()));
                 }
                 let body = body_parts.join(" | ");
@@ -256,6 +258,13 @@ pub fn run(mut args: Vec<String>) {
         spell_index.num_words, spelling_time
     );
 
+    // Extract --hybrid or --boost flags
+    let mut use_hybrid = false;
+    if let Some(pos) = args.iter().position(|a| a.eq_ignore_ascii_case("--hybrid") || a.eq_ignore_ascii_case("--boost")) {
+        args.remove(pos);
+        use_hybrid = true;
+    }
+
     // If query terms are passed as args, check for specialized commands or execute one-shot search
     if !args.is_empty() {
         let cmd = args[0].trim().to_lowercase();
@@ -264,14 +273,22 @@ pub fn run(mut args: Vec<String>) {
             execute_graph(&index, min_similarity);
         } else if cmd == "generate" {
             let seed = args.get(1).map(|s| s.as_str());
-            execute_generate(&index, tagger.as_ref(), seed, doc_name, is_csv);
+            let injected_tags: Vec<String> = args.iter().skip(2).map(|s| s.to_string()).collect();
+            execute_generate(&index, tagger.as_ref(), seed, &injected_tags, doc_name, is_csv);
         } else {
             let query = args.join(" ");
-            execute_search(&index, tagger.as_ref(), &spell_index, &query, variant, &params);
+            if use_hybrid {
+                match crate::hybrid::execute_hybrid_search(&index, tagger.as_ref(), &md_path, &query) {
+                    Ok(result) => result.print_cli(),
+                    Err(e) => eprintln!("\x1B[1;31mError in hybrid search: {}\x1B[0m", e),
+                }
+            } else {
+                execute_search(&index, tagger.as_ref(), &spell_index, &query, variant, &params);
+            }
         }
     } else {
         // Run Interactive REPL loop
-        run_repl(&index, tagger.as_ref(), &spell_index, variant, &params, doc_name, is_csv);
+        run_repl(&index, tagger.as_ref(), &spell_index, variant, &params, doc_name, is_csv, &md_path, use_hybrid);
     }
 }
 
@@ -314,6 +331,7 @@ fn execute_generate(
     index: &Bm25Index,
     tagger: Option<&Tagger>,
     seed: Option<&str>,
+    injected_tags: &[String],
     doc_name: &str,
     is_csv: bool,
 ) {
@@ -337,6 +355,8 @@ fn execute_generate(
         150,
         tagger,
         &index.entity_posting_lists,
+        &index.posting_lists,
+        injected_tags,
     );
     let gen_elapsed = start_gen.elapsed();
     
@@ -410,7 +430,7 @@ fn execute_search(
     }
     
     // Tag query itself with FST if enabled
-    if let Some(ref t) = tagger {
+    if let Some(t) = tagger {
         let query_tags = t.tag(query);
         if !query_tags.is_empty() {
             eprint!("  \x1B[32m└─ Matched Query Entities:\x1B[0m ");
@@ -454,9 +474,19 @@ fn execute_search(
     let hits = index.search(query, variant, params, tagger);
     let elapsed = start_search.elapsed();
 
-    eprintln!("\x1B[34mFound {} ranked results in {:.2?}\x1B[0m\n", hits.len(), elapsed);
+    let limit = env::var("LIMIT").ok().and_then(|s| s.parse::<usize>().ok());
+    if let Some(lim) = limit {
+        eprintln!("\x1B[34mFound {} ranked results (showing top {}) in {:.2?}\x1B[0m\n", hits.len(), lim, elapsed);
+    } else {
+        eprintln!("\x1B[34mFound {} ranked results in {:.2?}\x1B[0m\n", hits.len(), elapsed);
+    }
 
     for (rank, hit) in hits.iter().enumerate() {
+        if let Some(lim) = limit {
+            if rank >= lim {
+                break;
+            }
+        }
         let section = &index.sections[hit.section_index];
         println!(
             "\x1B[1;35mRank {} | Score: {:.4}\x1B[0m",
@@ -490,7 +520,7 @@ fn execute_search(
         }
         
         // Match 2: FST entity tags matches
-        if let Some(ref t) = tagger {
+        if let Some(t) = tagger {
             let doc_tags = t.tag(&section.body);
             for tag in doc_tags {
                 spans.push(HighlightSpan {
@@ -515,6 +545,7 @@ fn execute_search(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn run_repl(
     index: &Bm25Index,
     tagger: Option<&Tagger>,
@@ -523,6 +554,8 @@ fn run_repl(
     params: &Bm25Params,
     doc_name: &str,
     is_csv: bool,
+    md_path: &str,
+    default_hybrid: bool,
 ) {
     println!();
     println!("      \x1B[1;36m▄▀▀▄        Antigravity Search Mesh REPL\x1B[0m");
@@ -531,6 +564,7 @@ fn run_repl(
     println!("────────────────────────────────────────────────────────────");
     println!("Commands:");
     println!("  - Type a query to search the BM25 FST mesh.");
+    println!("  - Type \x1B[1mhybrid <query>\x1B[0m or \x1B[1mboost <query>\x1B[0m to run HATCHERIK semantic boosting search.");
     println!("  - Type \x1B[1mchat\x1B[0m to enter interactive Q&A AI mode.");
     println!("  - Type \x1B[1mgraph [min_sim]\x1B[0m to compute entity graph & write JSON.");
     if is_csv {
@@ -544,7 +578,11 @@ fn run_repl(
     let mut stdout = io::stdout();
 
     loop {
-        print!("\x1B[1;32msearch > \x1B[0m");
+        if default_hybrid {
+            print!("\x1B[1;32mhybrid-search > \x1B[0m");
+        } else {
+            print!("\x1B[1;32msearch > \x1B[0m");
+        }
         let _ = stdout.flush();
 
         let mut line = String::new();
@@ -572,24 +610,44 @@ fn run_repl(
                 println!();
                 continue;
             } else if cmd == "generate" {
-                let seed = parts.get(1).map(|s| *s);
-                execute_generate(index, tagger, seed, doc_name, is_csv);
+                let seed = parts.get(1).copied();
+                let injected_tags: Vec<String> = parts.iter().skip(2).map(|s| s.to_string()).collect();
+                execute_generate(index, tagger, seed, &injected_tags, doc_name, is_csv);
                 println!();
                 continue;
             } else if cmd == "chat" {
                 run_chat_mode(index, tagger, spell_index, variant, params, doc_name, is_csv);
                 println!();
                 continue;
+            } else if cmd == "boost" || cmd == "hybrid" {
+                let hybrid_query = parts.iter().skip(1).cloned().collect::<Vec<&str>>().join(" ");
+                if hybrid_query.is_empty() {
+                    println!("\x1B[1;31mUsage:\x1B[0m {} <query>", cmd);
+                } else {
+                    match crate::hybrid::execute_hybrid_search(index, tagger, md_path, &hybrid_query) {
+                        Ok(result) => result.print_cli(),
+                        Err(e) => eprintln!("\x1B[1;31mError: {}\x1B[0m", e),
+                    }
+                }
+                println!();
+                continue;
             }
         }
 
-        execute_search(index, tagger, spell_index, query, variant, params);
+        if default_hybrid {
+            match crate::hybrid::execute_hybrid_search(index, tagger, md_path, query) {
+                Ok(result) => result.print_cli(),
+                Err(e) => eprintln!("\x1B[1;31mError: {}\x1B[0m", e),
+            }
+        } else {
+            execute_search(index, tagger, spell_index, query, variant, params);
+        }
         println!();
     }
 }
 
 fn get_ai_name(doc_name: &str, is_csv: bool) -> String {
-    let clean = doc_name.replace('_', " ").replace('-', " ");
+    let clean = doc_name.replace(['_', '-'], " ");
     let mut capitalized = String::new();
     for word in clean.split_whitespace() {
         if !capitalized.is_empty() {
@@ -674,6 +732,15 @@ fn run_chat_mode(
             continue;
         }
 
+        // Dynamically extract entity tags from user's chat query to steer the response!
+        let mut injected_chat_tags = Vec::new();
+        if let Some(t) = tagger {
+            let query_tags = t.tag(query);
+            for tag in query_tags {
+                injected_chat_tags.push(tag.output);
+            }
+        }
+
         let top_hit = &hits[0];
         let section = &index.sections[top_hit.section_index];
         let query_tokens = crate::tokenize(query);
@@ -698,6 +765,8 @@ fn run_chat_mode(
                 30,
                 tagger,
                 &index.entity_posting_lists,
+                &index.posting_lists,
+                &injected_chat_tags,
             );
             println!("     \x1B[1;33m💡 Simulated Pattern Row:\x1B[0m");
             println!("        {}", simulated);
@@ -707,7 +776,7 @@ fn run_chat_mode(
             if !query_tokens.is_empty() {
                 let first_term = String::from_utf8_lossy(&query_tokens[0].bytes).to_lowercase();
                 if let Some(pos) = body.to_lowercase().find(&first_term) {
-                    start_idx = if pos > 50 { pos - 50 } else { 0 };
+                    start_idx = pos.saturating_sub(50);
                     while start_idx > 0 && !body.is_char_boundary(start_idx) {
                         start_idx -= 1;
                     }
@@ -733,6 +802,8 @@ fn run_chat_mode(
                 80,
                 tagger,
                 &index.entity_posting_lists,
+                &index.posting_lists,
+                &injected_chat_tags,
             );
             println!();
             
@@ -813,7 +884,7 @@ fn get_snippet_and_spans(
     let first_span = &spans[0];
     let start_char = first_span.start;
     
-    let mut window_start = if start_char > 100 { start_char - 100 } else { 0 };
+    let mut window_start = start_char.saturating_sub(100);
     
     // Align window_start to a valid UTF-8 character boundary walking backward
     while window_start > 0 && !text.is_char_boundary(window_start) {
