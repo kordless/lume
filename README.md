@@ -306,6 +306,14 @@ uv run python generate.py \
   --steer-tag "VALENTINE,PARIS" \
   --tag-bias 4.0 \
   --device cpu
+
+# 4. Run HATCHERIK Parallel Stochastic Path Exploration (Monte Carlo Search)
+uv run python parallel_explore_demo.py \
+  --prompt "Valentine met Dantes in" \
+  --steer-tag "VALENTINE,PARIS" \
+  --batch-size 128 \
+  --tokens 25 \
+  --device cpu
 ```
 
 ---
