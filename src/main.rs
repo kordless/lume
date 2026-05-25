@@ -64,7 +64,7 @@ fn print_help() {
     println!("  \x1B[1;32mtag\x1B[0m           Tag text locally using FST dictionary");
     println!("  \x1B[1;32mtag-server\x1B[0m    Run an HTTP tagger server (default port 8282)");
     println!("  \x1B[1;32msearch\x1B[0m        Run BM25 hybrid search REPL or one-shot command");
-    println!("  \x1B[1;32mhatcher-boost\x1B[0m HATCH two-stage semantic-lexical boosting engine");
+    println!("  \x1B[1;32mhatcher-boost\x1B[0m HATCHERIK two-stage semantic-lexical boosting engine");
     println!("                \x1B[38;5;244m(Aliases: hatcher, boost)\x1B[0m");
     println!("  \x1B[1;32mmcp\x1B[0m           Run high-performance Model Context Protocol (MCP) server");
     println!("  \x1B[1;32mcrawl\x1B[0m         Crawl a webpage to markdown via grub.nuts.services
@@ -81,7 +81,7 @@ fn print_help() {
     println!("  \x1B[38;5;244m# Start the high-performance local tagger API server:\x1B[0m");
     println!("  DATA=\"examples/data\" PORT=8282 lume tag-server");
     println!();
-    println!("  \x1B[38;5;244m# Run Erik Hatcher's dense HATCH semantic-boost hybrid search REPL:\x1B[0m");
+    println!("  \x1B[38;5;244m# Run Erik Hatcher's dense HATCHERIK semantic-boost hybrid search REPL:\x1B[0m");
     println!("  DATA=\"examples/data\" lume boost examples/monte_cristo.md");
     println!();
     println!("  \x1B[38;5;244m# Start the high-performance local Model Context Protocol (MCP) server:\x1B[0m");

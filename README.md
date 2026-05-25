@@ -26,7 +26,7 @@ Lume gives agents, crawlers, and local tools a fast document-memory layer they c
 - **Retrieve with real search math** — MiniRoaring postings, BM25, BM25+, and BM25-L.
 - **Handle messy queries** — trigram spelling correction and fuzzy guardrails.
 - **Find relationships** — entity co-occurrence graphs using Jaccard overlap.
-- **Blend semantics carefully** — optional HATCH-style lexical + vector boosting.
+- **Blend semantics carefully** — optional HATCHERIK lexical + vector boosting.
 
 ## Why It Exists
 
@@ -85,7 +85,7 @@ Lume features a native, zero-dependency JSON-RPC 2.0 stdio server, exposing offl
 DATA="examples/data" cargo run --release --bin lume -- mcp
 ```
 
-### 5. Try the HATCH Semantic Boosting REPL
+### 5. Try the HATCHERIK Semantic Boosting REPL
 Coordinate with a remote neural embedder ([shivvr.nuts.services](https://shivvr.nuts.services/)) to run conceptual searches:
 ```bash
 DATA="examples/data" ALPHA=2.0 cargo run --release --bin hatcher-boost -- examples/monte_cristo.md
@@ -141,7 +141,7 @@ graph TD
     P3 --> P4[Primitive 4: Field-Aware BM25]
     P4 --> P5[Primitive 5: Trigram Spelling Index]
     P5 --> P6[Primitive 6: Semantic Entity Co-occurrence Graph]
-    P6 --> P7[Primitive 7: HATCH Semantic Boosting]
+    P6 --> P7[Primitive 7: HATCHERIK Semantic Boosting]
 ```
 
 ### [Primitive 1] The FST Phrase Tagger
@@ -256,12 +256,12 @@ A mathematical graphing layer crossing FST dictionary tags with document roaring
     └──────────────────────────────┴──────────────────────────────┴────────┴───────┘
     ```
 
-### [Primitive 7] HATCH Semantic Boosting & Vector Integration (`hatcher-boost`)
-Our flagship hybrid integration, implementing the two-stage **HATCH Semantic Boosting** pattern (pioneered by **Erik Hatcher**, co-founder of **Lucidworks**).
+### [Primitive 7] HATCHERIK Semantic Boosting & Vector Integration (`hatcher-boost`)
+Our flagship hybrid integration, implementing **HATCHERIK** (**H**ybrid **A**dditive **T**wo-stage **C**ached **H**euristic **E**mbedded **R**escoring **I**ntersection **K**ernel) semantic boosting, pioneered by search veteran **Erik Hatcher** (co-founder of **Lucidworks**).
 *   **What it does**: Combines the precision and safety of local lexical search with the conceptual awareness of deep-neural ONNX embeddings:
     1.  **Stage 1 (ONNX Semantic Retrieval & Local Cache)**: Searches our local persistent index (`.lume-semantic-cache.json`) to find query results instantly offline (**<1ms**). On a cache miss, it lazily connects to an ephemeral session on [shivvr.nuts.services](https://shivvr.nuts.services/) to fetch semantic similarity scores and automatically preserves the query to the local cache.
     2.  **Stage 2 (Local Lexical Scoring)**: Calculates standard BM25 rankings.
-    3.  **True Union Blending**: Blends the candidates into a true Set Engine Union. If a document matches lexically, we apply the HATCH multiplicative boost:
+    3.  **True Union Blending**: Blends the candidates into a true Set Engine Union. If a document matches lexically, we apply the HATCHERIK multiplicative boost:
         ```text
         Score_hybrid = Score_BM25 * (1.0 + alpha * Similarity_semantic)
         ```
@@ -354,7 +354,7 @@ DATA="examples/data" ./target/release/lume search examples/monte_cristo.md graph
 DATA="examples/data" ./target/release/lume search examples/monte_cristo.md generate Dantès
 ```
 
-### HATCH Semantic Boosting
+### HATCHERIK Semantic Boosting
 ```bash
 # One-shot semantic-boosting with custom alpha weight
 DATA="examples/data" ALPHA=3.0 ./target/release/lume hatcher-boost examples/monte_cristo.md "mercedes dantes"
@@ -399,7 +399,7 @@ DATA="examples/data" ./target/release/lume mcp
 2. **`lume_search`**: Performs field-aware BM25 hybrid search over a file or directory on-the-fly, returning results in Markdown format with inline entity highlights.
 3. **`lume_generate`**: Builds a trigram Markov model over a document on-the-fly and generates guided text with live stochastic attention traces.
 4. **`lume_crawl`**: Stealth crawls any web page (via direct GET or nuts.services backend) into your personal collection, with automatic fallback to the resilient tokenless Firebase API for Hacker News URLs.
-5. **`lume_boost`**: Blends fast local BM25 indexing with dense semantic vector searches via shivvr.nuts.services to execute the two-stage HATCH concept-boosted hybrid query retrieval.
+5. **`lume_boost`**: Blends fast local BM25 indexing with dense semantic vector searches via shivvr.nuts.services to execute the two-stage HATCHERIK concept-boosted hybrid query retrieval.
 
 > [!TIP]
 > **Dynamic Index Caching**: The MCP server automatically caches parsed BM25 index states in a thread-safe global static. By tracking the modification time (`mtime`) of target paths, Lume skips re-indexing when documents haven't changed, reducing subsequent query response times to **under 1ms**.
@@ -461,7 +461,7 @@ Both the `search` and `hatcher-boost` subcommands boot into an interactive shell
     *   `graph [min_similarity]` (e.g. `graph 0.02`) to compute the entity network.
     *   `generate [seed]` (e.g. `generate Mercédès`) to draft Dumas-styled prose.
 *   **Hybrid REPL (`hybrid-search >`)**:
-    *   Type queries to display side-by-side comparative columns for **Pure Lexical BM25**, **Pure Semantic (ONNX)**, and **HATCH Boosted Hybrid** rankings.
+    *   Type queries to display side-by-side comparative columns for **Pure Lexical BM25**, **Pure Semantic (ONNX)**, and **HATCHERIK Boosted Hybrid** rankings.
 *   **Type `exit` or `quit`** in either interface to safely terminate the session.
 
 ---

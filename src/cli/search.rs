@@ -564,7 +564,7 @@ fn run_repl(
     println!("────────────────────────────────────────────────────────────");
     println!("Commands:");
     println!("  - Type a query to search the BM25 FST mesh.");
-    println!("  - Type \x1B[1mhybrid <query>\x1B[0m or \x1B[1mboost <query>\x1B[0m to run HATCH semantic boosting search.");
+    println!("  - Type \x1B[1mhybrid <query>\x1B[0m or \x1B[1mboost <query>\x1B[0m to run HATCHERIK semantic boosting search.");
     println!("  - Type \x1B[1mchat\x1B[0m to enter interactive Q&A AI mode.");
     println!("  - Type \x1B[1mgraph [min_sim]\x1B[0m to compute entity graph & write JSON.");
     if is_csv {
