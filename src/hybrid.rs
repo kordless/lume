@@ -221,7 +221,7 @@ pub fn initialize_and_ingest_session(
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_secs();
-    let sess = format!("lume-hatcher-{}", timestamp);
+    let sess = format!("lume-hatch-{}", timestamp);
 
     for (orig_idx, sec) in sections.iter().enumerate() {
         if sec.body.len() <= 25000 {
@@ -629,7 +629,7 @@ pub fn execute_hybrid_search(
 impl HybridSearchResult {
     pub fn to_markdown(&self) -> String {
         let mut out = String::new();
-        out.push_str(&format!("## 🚀 Hatcher Hybrid Search: \"{}\"\n\n", self.query));
+        out.push_str(&format!("## 🚀 HATCH Hybrid Search: \"{}\"\n\n", self.query));
         if self.is_cached {
             out.push_str("💡 *Results loaded instantly from offline semantic cache.*\n\n");
         } else {
@@ -681,7 +681,7 @@ impl HybridSearchResult {
             println!("  Remote Semantic Search (ONNX):  \x1B[36m{:.2?}\x1B[0m (returned {} docs)", self.sem_elapsed, self.semantic_results_count);
         }
         println!("  Local Lexical BM25 Search:      \x1B[36m{:.2?}\x1B[0m (returned {} docs)", self.lex_elapsed, self.bm25_results_count);
-        println!("  Hatcher Semantic Boosting:     \x1B[36m{:.2?}\x1B[0m", self.blend_elapsed);
+        println!("  HATCH Semantic Boosting:     \x1B[36m{:.2?}\x1B[0m", self.blend_elapsed);
         println!();
 
         println!("\x1B[1;4m1. PURE LEXICAL BM25 TOP MATCHES:\x1B[0m");
@@ -709,7 +709,7 @@ impl HybridSearchResult {
         }
         println!();
 
-        println!("\x1B[1;4;33m3. ERIK HATCHER SEMANTIC BOOSTED HYBRID TOP MATCHES:\x1B[0m");
+        println!("\x1B[1;4;33m3. HATCH SEMANTIC BOOSTED HYBRID TOP MATCHES:\x1B[0m");
         if self.hits.is_empty() {
             println!("  (No matches)");
         } else {
