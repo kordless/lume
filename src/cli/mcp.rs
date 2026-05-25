@@ -559,6 +559,35 @@ fn get_tools_list() -> serde_json::Value {
                     },
                     "required": ["embedding"]
                 }
+            },
+            {
+                "name": "lume_coherence_laundering",
+                "description": "Lume's premium neural-symbolic Coherence Laundering and Provenance Filter pipeline. Generates stochastically steered raw tokens using local causal weights and FST dictionary, runs a clause-level three-way lexical provenance check, purges BPE/hallucination noise, and smooths the verified fragments into authentic Victorian Faraday prose using host Gemma4:e2b.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "prompt": {
+                            "type": "string",
+                            "description": "The starting generation prompt (e.g. 'When the magnet was placed near the voltaic wire')."
+                        },
+                        "steer_tag": {
+                            "type": "string",
+                            "description": "Comma-separated concept tags to steer the generation (e.g. 'BISMUTH,FORCE')."
+                        },
+                        "tag_bias": {
+                            "type": "number",
+                            "description": "Logit bias weight added to FST steer tags (default 6.0)."
+                        },
+                        "max_tokens": {
+                            "type": "integer",
+                            "description": "Maximum number of tokens to generate from causal weights (default 150)."
+                        },
+                        "temperature": {
+                            "type": "number",
+                            "description": "Stochastic generation temperature (default 0.8)."
+                        }
+                    }
+                }
             }
         ]
     })
@@ -1057,6 +1086,30 @@ pub fn run(_args: Vec<String>) {
                                     }
                                 }
                             }
+                            "lume_coherence_laundering" => {
+                                let prompt = p.arguments.get("prompt").and_then(|v| v.as_str()).unwrap_or("When the magnet was placed near the voltaic wire, the electric current");
+                                let steer_tag = p.arguments.get("steer_tag").and_then(|v| v.as_str()).unwrap_or("BISMUTH,FORCE");
+                                let tag_bias = p.arguments.get("tag_bias").and_then(|v| v.as_f64()).unwrap_or(6.0);
+                                let max_tokens = p.arguments.get("max_tokens").and_then(|v| v.as_u64()).unwrap_or(150);
+                                let temperature = p.arguments.get("temperature").and_then(|v| v.as_f64()).unwrap_or(0.8);
+
+                                match execute_coherence_laundering(prompt, steer_tag, tag_bias, max_tokens, temperature) {
+                                    Ok(result_str) => ToolCallResult {
+                                        content: vec![McpContent {
+                                            content_type: "text".to_string(),
+                                            text: result_str,
+                                        }],
+                                        is_error: false,
+                                    },
+                                    Err(err_msg) => ToolCallResult {
+                                        content: vec![McpContent {
+                                            content_type: "text".to_string(),
+                                            text: format!("Error running coherence laundering: {}", err_msg),
+                                        }],
+                                        is_error: true,
+                                    },
+                                }
+                            }
                             unknown => ToolCallResult {
                                 content: vec![McpContent {
                                     content_type: "text".to_string(),
@@ -1100,4 +1153,74 @@ pub fn run(_args: Vec<String>) {
             let _ = stdout.flush();
         }
     }
+}
+
+fn execute_coherence_laundering(
+    prompt: &str,
+    steer_tag: &str,
+    tag_bias: f64,
+    max_tokens: u64,
+    temperature: f64,
+) -> Result<String, String> {
+    use std::process::Command;
+    
+    let python_path = "/workspace/rust-fstguardrails/autoresearch/.venv/bin/python";
+    let script_path = "/workspace/rust-fstguardrails/autoresearch/coherence_laundering.py";
+    
+    let output = Command::new(python_path)
+        .arg(script_path)
+        .arg("--prompt").arg(prompt)
+        .arg("--steer-tag").arg(steer_tag)
+        .arg("--tag-bias").arg(tag_bias.to_string())
+        .arg("--tokens").arg(max_tokens.to_string())
+        .arg("--temperature").arg(temperature.to_string())
+        .output()
+        .map_err(|e| format!("Failed to spawn python sub-process: {}", e))?;
+        
+    let stdout_str = String::from_utf8_lossy(&output.stdout);
+    let stderr_str = String::from_utf8_lossy(&output.stderr);
+    
+    if !output.status.success() {
+        return Err(format!("Python process exited with error.\nStdout: {}\nStderr: {}", stdout_str, stderr_str));
+    }
+    
+    // Parse the stdout between --- JSON_RESULT_START --- and --- JSON_RESULT_END ---
+    let start_marker = "--- JSON_RESULT_START ---";
+    let end_marker = "--- JSON_RESULT_END ---";
+    
+    if let Some(start_idx) = stdout_str.find(start_marker) {
+        if let Some(end_idx) = stdout_str.find(end_marker) {
+            let json_start = start_idx + start_marker.len();
+            let json_str = stdout_str[json_start..end_idx].trim();
+            
+            let mut formatted_output = String::new();
+            
+            // Extract audit report from stdout if present
+            let before_json = &stdout_str[..start_idx];
+            if let Some(audit_start) = before_json.find("================== PROVENANCE AUDIT REPORT ==================") {
+                let audit_report = &before_json[audit_start..];
+                formatted_output.push_str(audit_report.trim());
+                formatted_output.push_str("\n\n");
+            } else {
+                formatted_output.push_str("Provenance check completed successfully.\n\n");
+            }
+            
+            // Try to parse the JSON to get laundered_prose
+            if let Ok(json_val) = serde_json::from_str::<serde_json::Value>(json_str) {
+                if let Some(prose) = json_val.get("laundered_prose").and_then(|v| v.as_str()) {
+                    formatted_output.push_str("================= LAUNDERED COHERENT OUTPUT =================\n");
+                    formatted_output.push_str(prose);
+                    formatted_output.push_str("\n=============================================================\n");
+                } else {
+                    formatted_output.push_str("Could not extract laundered prose from JSON result.");
+                }
+            } else {
+                formatted_output.push_str("Could not parse JSON result from python process.");
+            }
+            
+            return Ok(formatted_output);
+        }
+    }
+    
+    Ok(stdout_str.into_owned())
 }

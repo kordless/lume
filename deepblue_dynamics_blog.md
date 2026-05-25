@@ -4,15 +4,13 @@
 
 ---
 
-Everyone building in AI is drunk on high-dimensional vectors. The current industry standard is to embed entire document databases, throw them into a heavy, remote vector store, and use dense vector similarity as the primary retrieval gate. 
+The current industry standard for retrieval-augmented generation has the ratio completely backwards. 
 
-This design has the ratio completely backwards. 
-
-When you make semantic vector search your primary filter, you lose exact keyword precision, blow out retrieval latency, and introduce conceptual opacity. You cannot easily inspect or debug *why* a dense vector matched a query. 
+Most architectures embed entire document databases, ingest them into heavy vector databases, and rely on dense vector similarity as the primary retrieval gate. By making semantic vector search the primary filter, developers sacrifice exact keyword precision, introduce severe latency overhead, and inherit conceptual opacity—meaning you can rarely audit or inspect *why* a dense vector matched a query. 
 
 We built **Lume**—a lightweight, bare-metal document-memory engine in Rust—to prove a different thesis: **Lexical search should be your primary candidate filter, and neural embeddings should serve strictly as a late-stage, optional re-ranker.** 
 
-By isolating the Finite State Transducer (FST) word-mapping crate from `tantivy` (`tantivy-fst`) and skipping the rest of their index engine, we constructed a zero-dependency retrieval kernel that runs entirely offline in milliseconds.
+By isolating the Finite State Transducer (FST) word-mapping crate from `tantivy` (`tantivy-fst`) and skipping the rest of their index engine, we constructed a single-dependency retrieval kernel that runs entirely offline in milliseconds.
 
 To clarify our architectural split: while Lume's lexical core, hybrid search index, and spelling/concept filters are written entirely in bare-metal Rust for high efficiency, our causal transformer pretraining and steered generative experiments are executed in Python utilizing PyTorch on the host GPU. This hybrid split preserves the lightweight Rust runtime for the local application while delegating heavy neural weights to dedicated GPU compute when needed.
 
@@ -31,12 +29,12 @@ Rather than running expensive entity recognition LLMs, we compile our dictionary
 When documents are crawled, term occurrences are written to **MiniRoaring**—our own simplified, lightweight implementation of Roaring Compressed Bitmaps. Intersecting (`AND`) or unioning (`OR`) candidate documents becomes a series of microsecond-level bitwise operations directly on the CPU register.
 
 #### Primitive III: Field-Aware BM25 Scoring
-Vector searches are stochastic; lexical searches are mathematical. We implement field-aware BM25 relevance rankings:
+Vector relevance is mathematically deterministic but conceptually opaque; BM25 is both deterministic AND inspectable. We implement field-aware BM25 relevance rankings:
 $$\text{Score}_{\text{BM25}} = \text{idf} \times \frac{\text{tf} \times (k_1 + 1)}{\text{tf} + k_1 \times (1 - b + b \times \frac{\text{len}}{\text{avg\_len}})}$$
 This gives us inspectable relevance. We can print the exact Term Frequency (tf) and Inverse Document Frequency (idf) weights for every field, making search behavior fully auditable.
 
 #### Primitive IV: Trigram Spelling Index
-Fuzzy queries should fail gracefully. We break index terms into character-level trigrams (`"this"` $\rightarrow$ `["_th", "thi", "his", "is_"]`) and build an inverted spelling index. If a query has a typo, Lume maps it back to the closest edit-distance dictionary term using Thompson NFA Levenshtein expansions before querying the bitmaps.
+Fuzzy queries should fail gracefully. We break index terms into character-level trigrams (`"this"` $\rightarrow$ `["_th", "thi", "his", "is_"]`) and build an inverted spelling index. If a query has a typo, Lume maps it back to the closest edit-distance dictionary term using a Levenshtein automaton before querying the bitmaps.
 
 ---
 
@@ -181,11 +179,14 @@ Instead of executing expensive neural vector search over all 10,459 records (whi
 ```
 
 1.  **First Shot (Lexical Candidate Pool):** Run a blazing-fast local BM25 keyword search to extract a high-precision candidate pool of the top **$50$ documents**.
-2.  **Second Shot (Semantic Re-ranking):** Outsource only these $50$ candidate chunks to `shivvr` to compute dense cosine similarities using a remote GTR-T5 model, returning semantic scores.
+2.  **Second Shot (Semantic Re-ranking):** Compute dense cosine similarities for only these $50$ candidate chunks. Depending on deployment needs, this can run entirely locally using an ONNX runtime with a lightweight GTR-T5 model, or outsource to a remote dense embedding service (like `shivvr` at `shivvr.nuts.services`), returning semantic scores.
 3.  **The Rescoring Kernel:** Fuses the scores using a multiplicative boost:
     $$\text{Score}_{\text{hybrid}} = \text{Score}_{\text{BM25}} \times (1.0 + \text{Score}_{\text{semantic}} \times \text{Weight})$$
 
-By confining the dense similarity computation to the top $50$ lexical candidates, Lume achieves the semantic depth of dense embeddings while keeping overall retrieval latency under **290 milliseconds**!
+    > [!NOTE]
+    > **Scale Normalization & Fallback Guardrails:** Since BM25 scores typically range in $[0, 30]$ and semantic cosine similarity ranges in $[-1, 1]$, a direct scale mismatch exists. In the hybrid fallback case (where a document only matches semantically, resulting in $\text{Score}_{\text{BM25}} = 0$), a raw cosine score of $0.8$ would be drowned out by even the weakest lexical matches. Lume resolves this by MinMax-scaling the candidate pool's BM25 scores into $[0, 1]$ before blending, or applying a baseline scale factor (e.g. multiplying the raw semantic score by the mean BM25 of the current pool) so that pure semantic candidates can compete fairly.
+
+By confining the dense similarity computation to the top $50$ lexical candidates, Lume achieves the semantic depth of dense embeddings while keeping overall retrieval latency under **290 milliseconds** (or under **15 milliseconds** if using local ONNX)!
 
 ---
 
