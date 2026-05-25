@@ -1164,8 +1164,8 @@ fn execute_coherence_laundering(
 ) -> Result<String, String> {
     use std::process::Command;
     
-    let python_path = "/workspace/rust-fstguardrails/autoresearch/.venv/bin/python";
-    let script_path = "/workspace/rust-fstguardrails/autoresearch/coherence_laundering.py";
+    let python_path = "/workspace/rust-fstguardrails/autosearch/.venv/bin/python";
+    let script_path = "/workspace/rust-fstguardrails/autosearch/coherence_laundering.py";
     
     let output = Command::new(python_path)
         .arg(script_path)

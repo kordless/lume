@@ -31,7 +31,7 @@ try:
     from generate import GPT, Tokenizer, generate
 except ImportError:
     print("Error: Could not import GPT/Tokenizer from generate.py. Ensure generate.py exists in the same folder.")
-    sys.path.append("/workspace/rust-fstguardrails/autoresearch")
+    sys.path.append("/workspace/rust-fstguardrails/autosearch")
     from generate import GPT, Tokenizer, generate
 
 # Define simple set of English stopwords for co-occurrence filtering
