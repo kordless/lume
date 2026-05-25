@@ -1,6 +1,15 @@
-# Lume: Memory for your Documents
+# Lume: Memory for Your Documents
 
-A high-performance Rust library, native Model Context Protocol (MCP) server, and CLI suite featuring an FST-backed phrase matcher, on-demand document indexer, and field-aware BM25 hybrid search engine.
+Lume is a tiny Rust search engine for local document memory.
+
+It crawls files on demand, tags phrases with an FST, stores fast posting lists, scores with field-aware BM25, corrects misspellings, builds entity co-occurrence graphs, and can blend lexical search with semantic similarity.
+
+It is built for the part of AI infrastructure that gets hand-waved too often:
+
+> You crawled the page. You parsed the document.  
+> Now where does that memory live?
+
+Lume gives agents, crawlers, and local tools a fast document-memory layer they can control: no giant search cluster, no mystery ranking pipeline, no cloud dependency for basic recall.
 
 <div align="center">
 
@@ -9,6 +18,28 @@ A high-performance Rust library, native Model Context Protocol (MCP) server, and
 [![Kord Campbell](https://img.shields.io/badge/Kord%20Campbell-kordless-9F44FF?style=for-the-badge&logo=github)](https://github.com/kordless)
 
 </div>
+
+## What Lume Does
+
+- **Crawl on demand** — point it at a file or directory and search immediately.
+- **Tag exact phrases fast** — FST-backed entity and phrase matching.
+- **Retrieve with real search math** — MiniRoaring postings, BM25, BM25+, and BM25-L.
+- **Handle messy queries** — trigram spelling correction and fuzzy guardrails.
+- **Find relationships** — entity co-occurrence graphs using Jaccard overlap.
+- **Blend semantics carefully** — optional Hatcher-style lexical + vector boosting.
+
+## Why It Exists
+
+LLMs need memory, but not all memory is chat history.
+
+Documents are memory too: crawled pages, manuals, books, logs, markdown files, specs, support tickets, and source-adjacent notes. Lume is a small, inspectable search stack for that memory.
+
+FSTs find the known things.  
+BM25 ranks the text.  
+Bitmaps isolate candidates.  
+Semantic boosting adds intent without replacing lexical truth.
+
+Then the machine remembers where it saw the thing.
 
 ---
 
@@ -244,6 +275,41 @@ Our flagship hybrid integration, implementing the two-stage **Semantic Boosting*
         sem_score
     };
     ```
+
+---
+
+## 🧠 Concept-Steered Transformer Pretraining Setup (Autoresearch)
+
+Lume bridges the gap between structured FST tags and modern generative AI by integrating a pre-trained, autoregressive GPT-style Transformer model located in the `autoresearch` directory. 
+
+Instead of treating entity tagging and text generation as isolated layers, Lume's FST tags are mapped dynamically to the Transformer's Byte Pair Encoding (BPE) vocabulary to **steer the generation process** towards specific semantic concepts at the logit level.
+
+### How Concept Steering Works
+1. **Dynamic BPE Mapping**: The pretraining pipeline uses custom BPE tokenization with a vocabulary size of 8,192 tokens. At startup, the text generator dynamically scans all 8,192 vocabulary tokens by calling `tokenizer.enc.decode_single_token_bytes(token_id)` and performing substring matching against the target FST tags. This design ensures **zero hardcoding** of vocabularies or token indices.
+2. **Logit Bias Injection**: During generation, the model predicts a logit distribution over the vocabulary. Positive logit biases are dynamically applied to BPE token classes mapped to targeted concepts (e.g., passing `--steer-tag "VALENTINE"` applies a positive bias of `+4.0` to all tokens matching that tag):
+   $$\text{logits}_{\text{steered}} = \text{logits} + \text{bias} \times \mathbf{1}_{\text{concept\_tokens}}$$
+3. **Visual Highlights & Diagnostics**: As the model generates text autoregressively, words that were influenced by the steer tags are outputted in **bright green** in the terminal, accompanied by an attention activation report summarizing the steered distribution's density.
+
+### Technical Usage Guide
+To train, prepare, and run FST concept-steered text generation locally:
+
+```bash
+# Navigate to the pretraining directory
+cd autoresearch
+
+# 1. Prepare and segment your Gutenberg dataset with BPE tokenization
+uv run python prepare.py
+
+# 2. Train the 6-layer GPT-style Transformer (384d, 6-head, SDPA fallback architecture)
+uv run python train.py
+
+# 3. Generate guided text using dynamic FST concept steering on CPU or GPU
+uv run python generate.py \
+  --prompt "Valentine met Dantes in" \
+  --steer-tag "VALENTINE,PARIS" \
+  --tag-bias 4.0 \
+  --device cpu
+```
 
 ---
 
