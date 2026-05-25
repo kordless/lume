@@ -1,0 +1,33 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+worktrees/
+results/
+queue/
+
+# Agent prompt files
+CLAUDE.md
+AGENTS.md
+
+# Experimental artifacts
+dev/
+
+# Results, logs, metrics, and plots
+*.tsv
+*.jsonl
+*.log
+*.png
+weber_test_results.json
+
+# Large model and dataset files
+*.pt
+*.parquet
+*.pkl
+*.tmp

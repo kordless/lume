@@ -1,0 +1,10 @@
+name,action,description
+magneto-electric induction,MAGNETO_ELECTRIC_INDUCTION,Generation of electric current from magnetic lines of force
+voltaic pile,VOLTAIC_PILE,Alessandro Volta's chemical battery pile
+Gymnotus,GYMNOTUS,Electric eel studied by Faraday for animal electricity
+gymnotus,GYMNOTUS,Electric eel studied by Faraday
+electro-chemical decomposition,ELECTROCHEMICAL_DECOMPOSITION,Chemical division of molecules using electric current
+atmospheric magnetism,ATMOSPHERIC_MAGNETISM,Magnetic properties of the atmosphere driven by oxygen
+lines of force,LINES_OF_FORCE,Conceptual lines representing vector fields of magnetic or electric influence
+magnecrystallic action,MAGNETO_CRYSTALLIC_ACTION,Physical action of crystalline structures in magnetic fields
+magne-crystallic action,MAGNETO_CRYSTALLIC_ACTION,Physical action of crystalline structures in magnetic fields

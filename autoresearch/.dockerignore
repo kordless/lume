@@ -1,0 +1,9 @@
+.venv
+karpathy
+__pycache__
+*.pyc
+run.log
+results.tsv
+.git
+progress.png
+analysis.ipynb

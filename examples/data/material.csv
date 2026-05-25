@@ -1,0 +1,15 @@
+name,action,description
+bismuth,BISMUTH,Strongly diamagnetic metal that aligns perpendicular or parallel depending on crystalline structure
+antimony,ANTIMONY,Diamagnetic metal used in thermopiles paired with bismuth
+platina,PLATINA,Platinum electrodes or wires used for electrochemical decomposition
+platinum,PLATINUM,Platinum electrodes or wires
+zinc,ZINC,Active metal used in voltaic batteries as the oxidisable element
+copper,COPPER,Conducting metal used in helices and wires
+lead,LEAD,Fusible metal compound used in electrochemistry
+sulphur,SULPHUR,Insulating or diamagnetic material used in crystals
+sulphuret of potassium,SULPHURET_POTASSIUM,Electrolytic fluid used to test contact theory
+steam,STEAM,Evolved gas used in friction-induced high-tension electricity
+water,WATER,Insulating or conducting liquid used in water friction experiments
+oxygen,OXYGEN,Paramagnetic gas liberated at the anode
+hydrogen,HYDROGEN,Combustible gas liberated at the cathode
+nitrogen,NITROGEN,Electrochemically inert atmospheric gas

@@ -1,0 +1,11 @@
+name,action,description
+magneto-crystallic force,MAGNETO_CRYSTALLIC_FORCE,Force causing bismuth crystal alignment along magnetic lines of force
+magnecrystallic force,MAGNETO_CRYSTALLIC_FORCE,Faraday's original spelling of magneto-crystallic force
+diamagnetism,DIAMAGNETISM,Repulsive magnetic property discovered by Faraday
+magnetic induction,MAGNETIC_INDUCTION,Production of magnetism in a body by external magnetic influence
+electric induction,ELECTRIC_INDUCTION,Production of charge in a body by external electric influence
+attraction,ATTRACTION,Force pulling bodies together
+repulsion,REPULSION,Force pushing bodies apart
+electric force,ELECTRIC_FORCE,Electrostatic or electrodynamic force of currents
+voltaic force,VOLTAIC_FORCE,Electromotive force of voltaic piles
+friction,FRICTION,Mechanical friction evolving high-tension electricity

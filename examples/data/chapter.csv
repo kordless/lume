@@ -1,0 +1,63 @@
+name,action,description
+FIRST SERIES,SERIES_1,Faraday's Experimental Researches in Electricity Series I
+SECOND SERIES,SERIES_2,Faraday's Experimental Researches in Electricity Series II
+THIRD SERIES,SERIES_3,Faraday's Experimental Researches in Electricity Series III
+FOURTH SERIES,SERIES_4,Faraday's Experimental Researches in Electricity Series IV
+FIFTH SERIES,SERIES_5,Faraday's Experimental Researches in Electricity Series V
+SIXTH SERIES,SERIES_6,Faraday's Experimental Researches in Electricity Series VI
+SEVENTH SERIES,SERIES_7,Faraday's Experimental Researches in Electricity Series VII
+EIGHTH SERIES,SERIES_8,Faraday's Experimental Researches in Electricity Series VIII
+NINTH SERIES,SERIES_9,Faraday's Experimental Researches in Electricity Series IX
+TENTH SERIES,SERIES_10,Faraday's Experimental Researches in Electricity Series X
+ELEVENTH SERIES,SERIES_11,Faraday's Experimental Researches in Electricity Series XI
+TWELFTH SERIES,SERIES_12,Faraday's Experimental Researches in Electricity Series XII
+THIRTEENTH SERIES,SERIES_13,Faraday's Experimental Researches in Electricity Series XIII
+FOURTEENTH SERIES,SERIES_14,Faraday's Experimental Researches in Electricity Series XIV
+FIFTEENTH SERIES,SERIES_15,Faraday's Experimental Researches in Electricity Series XV
+SIXTEENTH SERIES,SERIES_16,Faraday's Experimental Researches in Electricity Series XVI
+SEVENTEENTH SERIES,SERIES_17,Faraday's Experimental Researches in Electricity Series XVII
+EIGHTEENTH SERIES,SERIES_18,Faraday's Experimental Researches in Electricity Series XVIII
+NINETEENTH SERIES,SERIES_19,Faraday's Experimental Researches in Electricity Series XIX
+TWENTIETH SERIES,SERIES_20,Faraday's Experimental Researches in Electricity Series XX
+TWENTY-FIRST SERIES,SERIES_21,Faraday's Experimental Researches in Electricity Series XXI
+TWENTY-SECOND SERIES,SERIES_22,Faraday's Experimental Researches in Electricity Series XXII
+TWENTY-THIRD SERIES,SERIES_23,Faraday's Experimental Researches in Electricity Series XXIII
+TWENTY-FOURTH SERIES,SERIES_24,Faraday's Experimental Researches in Electricity Series XXIV
+TWENTY-FIFTH SERIES,SERIES_25,Faraday's Experimental Researches in Electricity Series XXV
+TWENTY-SIXTH SERIES,SERIES_26,Faraday's Experimental Researches in Electricity Series XXVI
+TWENTY-SEVENTH SERIES,SERIES_27,Faraday's Experimental Researches in Electricity Series XXVII
+TWENTY-EIGHTH SERIES,SERIES_28,Faraday's Experimental Researches in Electricity Series XXVIII
+TWENTY-NINTH SERIES,SERIES_29,Faraday's Experimental Researches in Electricity Series XXIX
+Series I,SERIES_1,Series I
+Series II,SERIES_2,Series II
+Series III,SERIES_3,Series III
+Series IV,SERIES_4,Series IV
+Series V,SERIES_5,Series V
+Series VI,SERIES_6,Series VI
+Series VII,SERIES_7,Series VII
+Series VIII,SERIES_8,Series VIII
+Series IX,SERIES_9,Series IX
+Series X,SERIES_10,Series X
+Series XI,SERIES_11,Series XI
+Series XII,SERIES_12,Series XII
+Series XIII,SERIES_13,Series XIII
+Series XIV,SERIES_14,Series XIV
+Series XV,SERIES_15,Series XV
+Series XVI,SERIES_16,Series XVI
+Series XVII,SERIES_17,Series XVII
+Series XVIII,SERIES_18,Series XVIII
+Series XIX,SERIES_19,Series XIX
+Series XX,SERIES_20,Series XX
+Series XXI,SERIES_21,Series XXI
+Series XXII,SERIES_22,Series XXII
+Series XXIII,SERIES_23,Series XXIII
+Series XXIV,SERIES_24,Series XXIV
+Series XXV,SERIES_25,Series XXV
+Series XXVI,SERIES_26,Series XXVI
+Series XXVII,SERIES_27,Series XXVII
+Series XXVIII,SERIES_28,Series XXVIII
+Series XXIX,SERIES_29,Series XXIX
+Paragraph,PARAGRAPH,Individual experimental research log entry
+Plate,PLATE,Voltaic battery or galvanic plate sequence
+Battery,BATTERY,Voltaic or electrostatic battery sequence
+Page,PAGE,Book page reference

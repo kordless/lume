@@ -1,0 +1,8 @@
+name,action,description
+axial,AXIAL,Alignment along the magnetic line of force (parallel)
+equatorial,EQUATORIAL,Alignment across the magnetic line of force (perpendicular)
+transverse,TRANSVERSE,Alignment perpendicular to lines of force
+parallel,PARALLEL,Alignment parallel to magnetic lines of force
+perpendicular,PERPENDICULAR,Alignment perpendicular to magnetic lines of force
+magne-crystallic axis,MAGNETO_CRYSTALLIC_AXIS,The line of bismuth crystal structure that aligns with magnetic force
+magnecrystallic axis,MAGNETO_CRYSTALLIC_AXIS,Faraday's spelling of magne-crystallic axis
