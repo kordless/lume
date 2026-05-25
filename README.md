@@ -1,15 +1,12 @@
 # Lume: Memory for Your Documents
 
-Lume is a tiny Rust search engine for local document memory.
+A small Rust search engine for document memory: FST phrase tagging, on-demand indexing, bitmap retrieval, BM25 ranking, spelling correction, entity graphs, and optional semantic boosting.
 
-It crawls files on demand, tags phrases with an FST, stores fast posting lists, scores with field-aware BM25, corrects misspellings, builds entity co-occurrence graphs, and can blend lexical search with semantic similarity.
+Crawling is back. Agents need fresh pages, local files, manuals, specs, and logs.
 
-It is built for the part of AI infrastructure that gets hand-waved too often:
+But once you crawl it, where do you put it?
 
-> You crawled the page. You parsed the document.  
-> Now where does that memory live?
-
-Lume gives agents, crawlers, and local tools a fast document-memory layer they can control: no giant search cluster, no mystery ranking pipeline, no cloud dependency for basic recall.
+Lume is the answer: a fast, local document-memory engine built from simple search primitives.
 
 <div align="center">
 
@@ -90,43 +87,6 @@ Coordinate with a remote neural embedder ([shivvr.nuts.services](https://shivvr.
 ```bash
 DATA="examples/data" ALPHA=2.0 cargo run --release --bin hatcher-boost -- examples/monte_cristo.md
 ```
-
----
-
-## 📖 The Backstory: How it All Connects
-
-Lume is the story of ideas moving from one person to another—a search meme carried through years of crawling systems, open-source heritage, industrial search consulting, and modern AI capability.
-
-### 🐧 The Seed: It Began with Crawling (Grub)
-It all started with web crawling. Back in the early days of distributed search, [Kord Campbell](https://www.linkedin.com/in/kordless) created **Grub**—a massively distributed web crawler. After installing Lucene, Kord sent an email to Eric Schmidt (then-CEO of Google), saying: *"Hey, I've got this super fast distributed crawler."* Schmidt replied with a classic search insight: *"That's not the problem. We've got crawling figured out. Indexing is the challenge."*
-
-Decades later, that conversation has come full circle. In the age of AI, **crawling is everything again**. To feed frontier LLMs, you have to crawl to get the content, and you need a crawler that you can control. 
-
-But once you crawl it, where do you put it? 
-
-### 🧠 The Memory Challenge
-You can't crawl the web fresh every single time you need an answer. Web pages are a type of document memory. Unlike bot or conversational memory (like an LLM remembering that a user's parrot is blue), document memory is about capturing the precise text you just saw. Some of these pages never update, while others update every minute with stock prices or weather data. You need a dedicated, extremely fast local document store to hold and index this memory.
-
-That's when the pieces fell into place. Kord was watching LinkedIn and saw [Steve Harris](https://www.linkedin.com/in/steveharris0) post about porting his zero-dependency Java FST tagger to Rust (released as [fstguardrails](https://github.com/jsclosures/fstguardrails)). Steve had run [Portaltown](https://www.portaltown.com), a search consultancy, and had worked for **Lucidworks**. His background as a U.S. Marine Corps air traffic controller deeply influenced how he designed systems: a pure focus on safety, extreme precision, and bare-metal performance. 
-
-Kord saw Steve's post and realized: *"That FST tagger is the first part of our document index."*
-
-### 💡 The "Aha" Moments (Erik Hatcher & Trey Grainger)
-To turn that FST tagger into a complete, lightweight search engine, Kord drew on years of shared search history. During his time consulting at **Lucidworks**, Kord had met OG search veterans [Trey Grainger](https://www.linkedin.com/in/treygrainger) and [Erik Hatcher](https://www.linkedin.com/in/erikhatcher). 
-
-Trey's work on Solr's **Semantic Knowledge Graph (SKG)** had always stuck with Kord. The concept seemed complex, but Erik Hatcher had delivered the ultimate "aha" moment by putting it simply: 
-> *Facets are just counts of the occurrences of something in a document. The Knowledge Graph is simply looking at those counts across all documents to perform document intersections. It is just counting the counts of things.*
-
-That was the magic of Erik Hatcher—he has always had the unique gift of taking complex technology and showing everyone how it actually works under the hood. (We throw affectionate shade at Trey for making it look complicated, and at Eric for making it look too simple!)
-
-Understanding that primitive meant realizing a high-speed search engine didn't need millions of lines of code. It just needed to do simple things incredibly fast: FSTs for words, roaring bitmaps for set intersections, spell correction for misspellings, and additive hybrid boosting for vector context. We wanted a system built with **only one external library** (`tantivy-fst`), and the rest made of pure, clean, understandable ideas.
-
-### 🚀 The 24-Hour AI Genesis
-A few months ago, Kord fired up Claude and said, *"Build me a simple BM25 index for these words."* It did, and looking at the clean code made the mathematical simplicity of BM25 click. 
-
-When Steve's Rust FST was released, Kord fired up **Antigravity**—a frontier-level AI coding assistant that Google just dropped days ago. Since Google is the undisputed king of web search, it is beautifully poetic that their own state-of-the-art AI pair-programmer helped write this search engine.
-
-Working in a continuous human-AI feedback loop with Kord's prattling systems-brain guiding the high-level design, Antigravity rapidly wrote and assembled the primitives. In a single 24-hour sprint, Lume went from an FST tagger to a complete, powerful, ultra-small search engine mesh. Kord called Steve, and they decided to put it out there for the world.
 
 ---
 
@@ -275,6 +235,43 @@ Our flagship hybrid integration, implementing **HATCHERIK** (**H**ybrid **A**ddi
         sem_score
     };
     ```
+
+---
+
+## 📖 The Backstory: How it All Connects
+
+Lume is the story of ideas moving from one person to another—a search meme carried through years of crawling systems, open-source heritage, industrial search consulting, and modern AI capability.
+
+### 🐧 The Seed: It Began with Crawling (Grub)
+It all started with web crawling. Back in the early days of distributed search, [Kord Campbell](https://www.linkedin.com/in/kordless) created **Grub**—a massively distributed web crawler. After installing Lucene, Kord sent an email to Eric Schmidt (then-CEO of Google), saying: *"Hey, I've got this super fast distributed crawler."* Schmidt replied with a classic search insight: *"That's not the problem. We've got crawling figured out. Indexing is the challenge."*
+
+Decades later, that conversation has come full circle. In the age of AI, **crawling is everything again**. To feed frontier LLMs, you have to crawl to get the content, and you need a crawler that you can control. 
+
+But once you crawl it, where do you put it? 
+
+### 🧠 The Memory Challenge
+You can't crawl the web fresh every single time you need an answer. Web pages are a type of document memory. Unlike bot or conversational memory (like an LLM remembering that a user's parrot is blue), document memory is about capturing the precise text you just saw. Some of these pages never update, while others update every minute with stock prices or weather data. You need a dedicated, extremely fast local document store to hold and index this memory.
+
+That's when the pieces fell into place. Kord was watching LinkedIn and saw [Steve Harris](https://www.linkedin.com/in/steveharris0) post about porting his zero-dependency Java FST tagger to Rust (released as [fstguardrails](https://github.com/jsclosures/fstguardrails)). Steve had run [Portaltown](https://www.portaltown.com), a search consultancy, and had worked for **Lucidworks**. His background as a U.S. Marine Corps air traffic controller deeply influenced how he designed systems: a pure focus on safety, extreme precision, and bare-metal performance. 
+
+Kord saw Steve's post and realized: *"That FST tagger is the first part of our document index."*
+
+### 💡 The "Aha" Moments (Erik Hatcher & Trey Grainger)
+To turn that FST tagger into a complete, lightweight search engine, Kord drew on years of shared search history. During his time consulting at **Lucidworks**, Kord had met OG search veterans [Trey Grainger](https://www.linkedin.com/in/treygrainger) and [Erik Hatcher](https://www.linkedin.com/in/erikhatcher). 
+
+Trey's work on Solr's **Semantic Knowledge Graph (SKG)** had always stuck with Kord. The concept seemed complex, but Erik Hatcher had delivered the ultimate "aha" moment by putting it simply: 
+> *Facets are just counts of the occurrences of something in a document. The Knowledge Graph is simply looking at those counts across all documents to perform document intersections. It is just counting the counts of things.*
+
+That was the magic of Erik Hatcher—he has always had the unique gift of taking complex technology and showing everyone how it actually works under the hood. (We throw affectionate shade at Trey for making it look complicated, and at Eric for making it look too simple!)
+
+Understanding that primitive meant realizing a high-speed search engine didn't need millions of lines of code. It just needed to do simple things incredibly fast: FSTs for words, roaring bitmaps for set intersections, spell correction for misspellings, and additive hybrid boosting for vector context. We wanted a system built with **only one external library** (`tantivy-fst`), and the rest made of pure, clean, understandable ideas.
+
+### 🚀 The 24-Hour AI Genesis
+A few months ago, Kord fired up Claude and said, *"Build me a simple BM25 index for these words."* It did, and looking at the clean code made the mathematical simplicity of BM25 click. 
+
+When Steve's Rust FST was released, Kord fired up **Antigravity**—a frontier-level AI coding assistant that Google just dropped days ago. Since Google is the undisputed king of web search, it is beautifully poetic that their own state-of-the-art AI pair-programmer helped write this search engine.
+
+Working in a continuous human-AI feedback loop with Kord's prattling systems-brain guiding the high-level design, Antigravity rapidly wrote and assembled the primitives. In a single 24-hour sprint, Lume went from an FST tagger to a complete, powerful, ultra-small search engine mesh. Kord called Steve, and they decided to put it out there for the world.
 
 ---
 
