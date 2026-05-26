@@ -213,7 +213,7 @@ class Tokenizer:
 # ---------------------------------------------------------------------------
 
 @torch.no_grad()
-def generate(model, tokenizer, prompt, max_tokens=200, temperature=1.0, top_k=50, steer_tags=None, tag_bias=3.0):
+def generate(model, tokenizer, prompt, max_tokens=200, temperature=1.0, top_k=50, steer_tags=None, tag_bias=3.0, jsd_calibrate=False):
     device = next(model.parameters()).device
     
     # Pre-scan BPE tokenizer vocabulary for matching steer tags (substring / co-occurrence)
@@ -258,36 +258,42 @@ def generate(model, tokenizer, prompt, max_tokens=200, temperature=1.0, top_k=50
         calibration_triggered = False
         
         if steer_token_ids:
-            logits_unsteered = logits[:, -1, :] / temperature
-            Q = F.softmax(logits_unsteered, dim=-1)
-            
-            # Calibration loop to keep JSD <= 0.45
-            for attempt in range(5):
-                logits_steered = logits_unsteered.clone()
+            if jsd_calibrate:
+                logits_unsteered = logits[:, -1, :] / temperature
+                Q = F.softmax(logits_unsteered, dim=-1)
+                
+                # Calibration loop to keep JSD <= 0.45
+                for attempt in range(5):
+                    logits_steered = logits_unsteered.clone()
+                    for token_id in steer_token_ids:
+                        logits_steered[0, token_id] += active_bias
+                    
+                    P = F.softmax(logits_steered, dim=-1)
+                    M = 0.5 * (P + Q)
+                    
+                    eps = 1e-12
+                    # KL Divergence with base 2
+                    kl_pm = torch.sum(P * torch.log2((P + eps) / (M + eps)), dim=-1)
+                    kl_qm = torch.sum(Q * torch.log2((Q + eps) / (M + eps)), dim=-1)
+                    jsd_tensor = 0.5 * kl_pm + 0.5 * kl_qm
+                    jsd_val = jsd_tensor.item()
+                    
+                    if jsd_val <= 0.45 or active_bias <= 0.1:
+                        break
+                    else:
+                        active_bias *= 0.70  # Scale back bias by 30%
+                        calibration_triggered = True
+                
+                logits_step = logits_steered
+                jsd_history.append(jsd_val)
+                bias_history.append(active_bias)
+                if calibration_triggered:
+                    calibration_count += 1
+            else:
+                # Standard steering without JSD calibration
+                logits_step = logits[:, -1, :] / temperature
                 for token_id in steer_token_ids:
-                    logits_steered[0, token_id] += active_bias
-                
-                P = F.softmax(logits_steered, dim=-1)
-                M = 0.5 * (P + Q)
-                
-                eps = 1e-12
-                # KL Divergence with base 2
-                kl_pm = torch.sum(P * torch.log2((P + eps) / (M + eps)), dim=-1)
-                kl_qm = torch.sum(Q * torch.log2((Q + eps) / (M + eps)), dim=-1)
-                jsd_tensor = 0.5 * kl_pm + 0.5 * kl_qm
-                jsd_val = jsd_tensor.item()
-                
-                if jsd_val <= 0.45 or active_bias <= 0.1:
-                    break
-                else:
-                    active_bias *= 0.70  # Scale back bias by 30%
-                    calibration_triggered = True
-            
-            logits_step = logits_steered
-            jsd_history.append(jsd_val)
-            bias_history.append(active_bias)
-            if calibration_triggered:
-                calibration_count += 1
+                    logits_step[0, token_id] += tag_bias
         else:
             logits_step = logits[:, -1, :] / temperature
 
@@ -317,7 +323,7 @@ def generate(model, tokenizer, prompt, max_tokens=200, temperature=1.0, top_k=50
     print("\n")
     if steer_tags:
         print(f"🎯 [Attention Report] Composed concept steering activation rate: {steered_tokens_generated / max_tokens * 100:.1f}%")
-        if jsd_history:
+        if jsd_calibrate and jsd_history:
             avg_jsd = sum(jsd_history) / len(jsd_history)
             max_jsd = max(jsd_history)
             print(f"🧮 [Jensen-Shannon Calibration Report]")
@@ -344,6 +350,7 @@ def main():
     parser.add_argument("--steer-tag", type=str, default=None, help="Comma-separated FST concept tags (e.g. VALENTINE,PARIS)")
     parser.add_argument("--tag-bias", type=type(1.0), default=3.0, help="Logit bias added to FST steered concept tokens")
     parser.add_argument("--device", type=str, default="cuda")
+    parser.add_argument("--jsd-calibrate", action="store_true", help="Enable dynamic Jensen-Shannon Divergence steering calibration")
     args = parser.parse_args()
 
     # Set ACTIVE_BOOK env var dynamically so prepare / tokenizer load correctly
@@ -420,7 +427,8 @@ def main():
         temperature=args.temperature,
         top_k=args.top_k,
         steer_tags=steer_tags,
-        tag_bias=args.tag_bias
+        tag_bias=args.tag_bias,
+        jsd_calibrate=args.jsd_calibrate
     )
 
 if __name__ == "__main__":

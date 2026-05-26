@@ -235,6 +235,7 @@ def main():
     parser.add_argument("--tokens", type=int, default=150)
     parser.add_argument("--temperature", type=float, default=0.8)
     parser.add_argument("--top-k", type=int, default=50)
+    parser.add_argument("--jsd-calibrate", action="store_true", help="Enable dynamic Jensen-Shannon Divergence steering calibration")
     args = parser.parse_args()
 
     print("=== LUME NEURAL-SYMBOLIC COHERENCE LAUNDERING PIPELINE ===")
@@ -297,7 +298,8 @@ def main():
         temperature=args.temperature,
         top_k=args.top_k,
         steer_tags=steer_tags,
-        tag_bias=args.tag_bias
+        tag_bias=args.tag_bias,
+        jsd_calibrate=args.jsd_calibrate
     )
     
     # 3. Load reference Faraday corpus & FST dictionaries for provenance checks
