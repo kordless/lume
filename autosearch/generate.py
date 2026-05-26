@@ -237,6 +237,10 @@ def generate(model, tokenizer, prompt, max_tokens=200, temperature=1.0, top_k=50
     tokens = tokenizer.encode(prompt, prepend=tokenizer.get_bos_token_id())
     tokens = torch.tensor([tokens], dtype=torch.long, device=device)
 
+    jsd_history = []
+    bias_history = []
+    calibration_count = 0
+
     print(f"\n🚀 Generating stochastically from Transformer (Temp: {temperature}, Top-k: {top_k})...\n")
 
     steered_tokens_generated = 0
@@ -247,19 +251,52 @@ def generate(model, tokenizer, prompt, max_tokens=200, temperature=1.0, top_k=50
         # Crop context to model's sequence length limit
         idx = tokens[:, -2048:]
         logits = model(idx)
-        logits = logits[:, -1, :] / temperature
-
-        # Apply FST Concept Steering Bias to boost targets
+        
+        # Apply FST Concept Steering Bias to boost targets with JSD Calibration
+        jsd_val = 0.0
+        active_bias = tag_bias
+        calibration_triggered = False
+        
         if steer_token_ids:
-            for token_id in steer_token_ids:
-                logits[0, token_id] += tag_bias
+            logits_unsteered = logits[:, -1, :] / temperature
+            Q = F.softmax(logits_unsteered, dim=-1)
+            
+            # Calibration loop to keep JSD <= 0.45
+            for attempt in range(5):
+                logits_steered = logits_unsteered.clone()
+                for token_id in steer_token_ids:
+                    logits_steered[0, token_id] += active_bias
+                
+                P = F.softmax(logits_steered, dim=-1)
+                M = 0.5 * (P + Q)
+                
+                eps = 1e-12
+                # KL Divergence with base 2
+                kl_pm = torch.sum(P * torch.log2((P + eps) / (M + eps)), dim=-1)
+                kl_qm = torch.sum(Q * torch.log2((Q + eps) / (M + eps)), dim=-1)
+                jsd_tensor = 0.5 * kl_pm + 0.5 * kl_qm
+                jsd_val = jsd_tensor.item()
+                
+                if jsd_val <= 0.45 or active_bias <= 0.1:
+                    break
+                else:
+                    active_bias *= 0.70  # Scale back bias by 30%
+                    calibration_triggered = True
+            
+            logits_step = logits_steered
+            jsd_history.append(jsd_val)
+            bias_history.append(active_bias)
+            if calibration_triggered:
+                calibration_count += 1
+        else:
+            logits_step = logits[:, -1, :] / temperature
 
         # Top-k filtering
         if top_k > 0:
-            v, _ = torch.topk(logits, min(top_k, logits.size(-1)))
-            logits[logits < v[:, [-1]]] = float('-inf')
+            v, _ = torch.topk(logits_step, min(top_k, logits_step.size(-1)))
+            logits_step[logits_step < v[:, [-1]]] = float('-inf')
 
-        probs = F.softmax(logits, dim=-1)
+        probs = F.softmax(logits_step, dim=-1)
         next_token = torch.multinomial(probs, num_samples=1)
         
         next_token_id = next_token.item()
@@ -280,6 +317,16 @@ def generate(model, tokenizer, prompt, max_tokens=200, temperature=1.0, top_k=50
     print("\n")
     if steer_tags:
         print(f"🎯 [Attention Report] Composed concept steering activation rate: {steered_tokens_generated / max_tokens * 100:.1f}%")
+        if jsd_history:
+            avg_jsd = sum(jsd_history) / len(jsd_history)
+            max_jsd = max(jsd_history)
+            print(f"🧮 [Jensen-Shannon Calibration Report]")
+            print(f"  ➔ Average JSD: {avg_jsd:.4f}")
+            print(f"  ➔ Maximum JSD: {max_jsd:.4f}")
+            print(f"  ➔ JSD Calibration Triggers (JSD > 0.45): {calibration_count} times")
+            if calibration_count > 0:
+                min_bias = min(bias_history)
+                print(f"  ➔ Steer Bias calibrated from {tag_bias:.2f} down to floor of {min_bias:.2f}")
     return tokenizer.decode(tokens[0].tolist())
 
 # ---------------------------------------------------------------------------

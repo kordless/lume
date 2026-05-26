@@ -215,6 +215,14 @@ It is the single most dangerous failure mode of any modern "small model generate
 
 The scrambled syntax of the overfit model was actually protecting you—it was visibly broken. Grammatical cleanup removes that protection, laundering a hallucinated BPE merge into a confident, highly persuasive scientific claim that Michael Faraday never made.
 
+> [!TIP]
+> **Measuring the Steered Causal Walk via Jensen-Shannon Divergence:**
+> To mathematically monitor and contain the intensity of this logit-steered causal walk at inference time (without retraining or rebuilding the model), Lume computes the **Jensen-Shannon Divergence (JSD)** between the steered probability distribution $P$ (with active logit bias) and the unsteered base model distribution $Q$ at each token step $t$:
+> $$\text{JSD}(P \parallel Q) = \frac{1}{2} \text{D}_{\text{KL}}(P \parallel M) + \frac{1}{2} \text{D}_{\text{KL}}(Q \parallel M)$$
+> Where $M = \frac{1}{2}(P + Q)$ represents the average distribution, and $\text{D}_{\text{KL}}$ is the Kullback-Leibler divergence:
+> $$\text{D}_{\text{KL}}(A \parallel B) = \sum_{x \in \mathcal{X}} A(x) \log_2 \frac{A(x)}{B(x)}$$
+> Because JSD is symmetric and strictly bounded in $[0, 1]$, it provides a clean, normalized real-time metric of **Steering Shift**. When $\text{JSD} > 0.45$, the local FST concept steering has overpowered the causal transformer's physical/grammatical priors, serving as an instant mathematical warning that the model is entering a **BPE hallucination spike**. By dynamically scaling back the logit bias when JSD exceeds this threshold, Lume keeps the steered walk firmly inside grounded semantic boundaries.
+
 ---
 
 ## 🔬 4. Accidental Archaeology vs. Pure Hallucination
