@@ -1,0 +1,611 @@
+[
+  {
+    "series": "FOURTH SERIES",
+    "qna": [
+      {
+        "question": "What role did a thin film of ice play in Faraday's experiments with the voltaic battery?",
+        "answer": "The thin film of ice acted as an insulator, preventing the transmission of electricity and stopping electrochemical decomposition even when a powerful voltaic battery was connected."
+      },
+      {
+        "question": "How were the tin vessels and platina plates arranged in the experiments to test the conducting power of ice?",
+        "answer": "Tin vessels of specified dimensions had platina plates fixed by corks to keep them from contacting the tin, with copper wires soldered to the platina; distilled water was poured in and frozen to create a pure ice barrier between the platina and the tin."
+      },
+      {
+        "question": "What observation was made when the ice touching the platina was partially melted during Faraday's experiments?",
+        "answer": "When warming caused the ice adjacent to the platina to liquefy, conduction occurred suddenly, and the galvanometer needle deflected nearly 70°."
+      },
+      {
+        "question": "Under what specific conditions did unintentional conduction occur through the ice barrier?",
+        "answer": "Conduction occurred when the water was not completely frozen, such as when exposure to air or handling produced a film of fluid at the upper surface, or when damp corks allowed slight warming and melting at the point of contact."
+      }
+    ]
+  },
+  {
+    "series": "FIFTH SERIES",
+    "qna": [
+      {
+        "question": "What is the key difference between the electricities produced by the common electrical machine and those produced by the voltaic battery in Faraday's experiments?",
+        "answer": "The machine produces a high-tension, small-quantity electricity while the voltaic battery supplies a large quantity of low-tension electricity."
+      },
+      {
+        "question": "How does the extension of the conductor length affect the electro-chemical decomposition process according to Faraday's experiments?",
+        "answer": "The extension of the conductor, even up to seventy feet, does not diminish the amount of decomposition provided the same quantity of electricity is passed."
+      },
+      {
+        "question": "What experimental setup demonstrated that electro-chemical decomposition can occur using only one metallic pole?",
+        "answer": "Experiments where a single metallic pole was used—either with a moistened string held in the hand or suspended by glass—showed that decomposition occurred, indicating that only one metallic pole is necessary."
+      },
+      {
+        "question": "In the experiment using litmus and turmeric papers, what substances evolved at the positive and negative poles respectively?",
+        "answer": "Acid evolved at the positive (litmus paper) end and alkali evolved at the negative (turmeric paper) end."
+      }
+    ]
+  },
+  {
+    "series": "SEVENTH SERIES",
+    "qna": [
+      {
+        "question": "What term does Faraday propose as a replacement for 'pole' when describing the surface through which electric current passes into and out of the decomposing body?",
+        "answer": "Electrode."
+      },
+      {
+        "question": "How does Faraday define the 'anode' in the context of electro-chemical decomposition?",
+        "answer": "The anode is defined as the surface at which the electric current enters the decomposing body, designated as the negative extremity where oxygen, chlorine, acids, etc., are evolved, and is opposite to the positive electrode."
+      },
+      {
+        "question": "Which term does Faraday use to describe bodies that are decomposed directly by the electric current, resulting in the liberation of their elements?",
+        "answer": "Electrolytes."
+      },
+      {
+        "question": "What nomenclature does Faraday introduce for substances that migrate to the electrodes during electro-chemical decomposition, and how are these substances categorized?",
+        "answer": "Substances migrating to the electrodes are categorized as anions when moving to the anode and as cations when moving to the cathode, with both collectively referred to as ions."
+      }
+    ]
+  },
+  {
+    "series": "EIGHTH SERIES",
+    "qna": [
+      {
+        "question": "What are the specific dimensions and materials of the metal plates used in the simple voltaic circle experiment as described in the snippet?",
+        "answer": "Faraday used a plate of zinc about eight inches long and half an inch wide, and a plate of platina about three inches long and half an inch wide."
+      },
+      {
+        "question": "Which electrolyte solution was employed on the bibulous paper to facilitate the decomposition of iodide in Faraday’s experiment?",
+        "answer": "A solution of iodide of potassium was used on the bibulous paper."
+      },
+      {
+        "question": "How did Faraday configure the apparatus to demonstrate the electrolytic decomposition at point x in the experiment?",
+        "answer": "He arranged the zinc plate with a bibulous paper moistened in iodide of potassium, pressed by the end of a platina wire, and immersed the assembly in dilute sulphuric acid mixed with a little nitric acid to observe immediate decomposition and iodine formation at the anode."
+      },
+      {
+        "question": "What experimental observations confirmed that the decomposition reaction was due to an electric current rather than a mere chemical action?",
+        "answer": "The decomposition ceased when the acid vessel was removed from the plates, and connecting the metals outside or in the acid produced a reverse order of deposition, demonstrating the reaction depended on an established electric current."
+      }
+    ]
+  },
+  {
+    "series": "THIRD SERIES",
+    "qna": [
+      {
+        "question": "How does Faraday classify the phenomena of electricity in his Third Series?",
+        "answer": "He classifies them into two categories: those connected with electricity of tension and those belonging to electricity in motion."
+      },
+      {
+        "question": "What are the five effects of electricity in motion listed by Faraday?",
+        "answer": "The five effects are the evolution of heat, magnetism, chemical decomposition, physiological phenomena, and the production of spark."
+      },
+      {
+        "question": "What were the results when Faraday attempted to discharge a voltaic battery using delicately arranged points in both air and an exhausted receiver?",
+        "answer": "No current was detected by either magnetic or chemical effects, as the delicate points failed to discharge the battery."
+      },
+      {
+        "question": "How does Faraday demonstrate that the inability of delicate points to discharge the battery is consistent between voltaic and common electricity?",
+        "answer": "He shows that when a Leyden battery was charged to the same deflection on the gold leaf electrometer, the points equally failed to produce magnetic or chemical effects, indicating that the low intensity of discharge prevented observable effects in both cases."
+      }
+    ]
+  },
+  {
+    "series": "SECOND SERIES",
+    "qna": [
+      {
+        "question": "In experiment 141, what components were combined in the apparatus and how were they arranged to demonstrate terrestrial magneto-electric induction?",
+        "answer": "The experiment used a previously described hollow helix connected to a galvanometer by eight-foot wires and a soft iron cylinder that had been heated red-hot and cooled to remove magnetism. The cylinder was inserted into the helix with equal projection at both ends, and the combined apparatus was oriented in the magnetic dip before being inverted to produce a significant galvanometer needle deflection."
+      },
+      {
+        "question": "According to experiment 142, how does the deflection of the galvanometer needle behave when the helix is inverted with different orientation of the ends?",
+        "answer": "When end A is uppermost, the inversion of the helix produces a deflection in one direction regardless of the inversion course, while when end B is uppermost the inversion always causes a deflection in the opposite direction."
+      },
+      {
+        "question": "What observation was recorded in experiment 148 when the helix was inverted without any ferruginous matter, and what does this demonstrate regarding the earth’s magnetism?",
+        "answer": "In experiment 148, the helix placed in the magnetic dip but without any ferruginous matter produced a feeble galvanometer action upon inversion, and repeated inversions led the needle to vibrate through an arc of 80° to 90°. This demonstrates that direct currents of electricity can be induced solely by the earth’s magnetism acting on a non-magnetic metal."
+      },
+      {
+        "question": "In experiment 152, how does the direction of the induced current in the rotating metal plate relate to the manner of rotation?",
+        "answer": "When the plate revolves in a screw-fashion (like the hands of a watch), the induced current flows from the centre to the circumference, and when it revolves in an unscrew direction, the current flows from the circumference to the centre."
+      }
+    ]
+  },
+  {
+    "series": "SIXTH SERIES",
+    "qna": [
+      {
+        "question": "In section 566, what were the dimensions and construction details of the glass tube used in the experiments, particularly concerning the platina poles?",
+        "answer": "The tube was about 12 inches long and 3/4 inch in diameter, with a hermetically sealed upper end into which two platina poles were fixed via wires terminated in gold-soldered plates."
+      },
+      {
+        "question": "According to section 567, what difference in action was observed between the positive and negative platina poles when introduced into a tube containing a mixture of oxygen and hydrogen?",
+        "answer": "The positive platina pole caused the union (combination) of oxygen and hydrogen, whereas the negative pole did not induce this combination."
+      },
+      {
+        "question": "How did Faraday demonstrate the conversion of a mixture of oxygen and hydrogen into water using a prepared platina plate as described in section 570?",
+        "answer": "A platina plate, after being connected to the positive pole in dilute sulphuric acid, was introduced into a tube with a 2:1 oxygen-hydrogen mixture, leading to a rapid decrease in gas volume, significant heating (with boiling water), and conversion of about 3/4ths of the gas mixture into water."
+      },
+      {
+        "question": "What effect did the prepared platina plate have on gas mixtures other than oxygen and hydrogen, such as those containing nitrous, olefiant, or carbonic oxide gases?",
+        "answer": "The platina plate exhibited a very slow and faint action on mixtures with nitrous oxide or nitrous gas, and it had no noticeable effect on mixtures of olefiant gas with oxygen or on mixtures of carbonic oxide with oxygen."
+      }
+    ]
+  },
+  {
+    "series": "FIRST SERIES",
+    "qna": [
+      {
+        "question": "What was the precise construction of the compound helix used in section 6 of the experiment?",
+        "answer": "About twenty-six feet of copper wire, one twentieth of an inch in diameter, was wound as a helix around a wooden cylinder with twine preventing contact between spires. Twelve such helices were superposed, with alternate helices connected end-to-end to form two principal helices, each containing 155 feet of wire."
+      },
+      {
+        "question": "What were the specific characteristics of the voltaic battery used with the first pair of helices?",
+        "answer": "The battery consisted of ten pairs of plates, each plate being four inches square with double coppers, and it was well charged."
+      },
+      {
+        "question": "What galvanometer observations were made when the circuit was completed and then broken in the induction experiments?",
+        "answer": "Upon completing the circuit, a slight deflection of the galvanometer needle occurred in one direction, and upon breaking the circuit, an equally slight deflection occurred in the opposite direction, although no sustained current was observed."
+      },
+      {
+        "question": "How did Faraday confirm the transient induced current by modifying the apparatus with a small hollow helix and a steel needle?",
+        "answer": "He replaced the galvanometer with a small hollow helix formed around a glass tube, inserted a steel needle, and observed that when the battery contact was made (and the needle later removed before breaking contact), the needle became magnetised, confirming a transient induced current."
+      }
+    ]
+  },
+  {
+    "series": "ELEVENTH SERIES",
+    "qna": [
+      {
+        "question": "What experimental setup did Faraday use involving ice and platina foil to illustrate electrical induction?",
+        "answer": "Faraday used a plate of ice coated with platina foil on both surfaces connected to a source of the two electrical powers, creating a Leyden-like arrangement that charged the ice without permitting current flow when in the solid state."
+      },
+      {
+        "question": "How did the state of the electrolyte affect the observed electrical phenomena in Faraday's experiments?",
+        "answer": "In Faraday's experiments, a solid electrolyte exhibited standard induction with no current flow, while liquefaction allowed electrical current to pass and reduced the degree of induction due to the molecular arrangement facilitating the transfer of electrolyte elements."
+      },
+      {
+        "question": "What specific conclusion did Faraday draw regarding the mechanism of induction based on his experimental observations?",
+        "answer": "Faraday concluded that ordinary induction results from an action of contiguous particles exhibiting a species of polarity, rather than being an action transmitted through a distance without the influence of intervening matter."
+      },
+      {
+        "question": "Which scientists' theories did Faraday reference concerning induction, and what aspect of his observations set his view apart?",
+        "answer": "Faraday referenced the theories of Epinus, Cavendish, and Poisson, who considered induction as an action at a distance in straight lines, whereas his observations suggested that induction is an action of contiguous particles."
+      }
+    ]
+  },
+  {
+    "series": "TENTH SERIES",
+    "qna": [
+      {
+        "question": "How does Faraday describe the division of chemical force in a simple voltaic circuit?",
+        "answer": "He explains that the chemical forces are divided into a local part, which is wasted, and a transmitted part that circulates as the electric current."
+      },
+      {
+        "question": "What specific improvement did Faraday propose for a voltaic battery constructed of zinc and platina?",
+        "answer": "He proposed that if platina surrounds zinc, no insulating divisions (like glass, porcelain, or air) are necessary between the platina surfaces, because the resistance at the point of decomposition prevents a discharge between them."
+      },
+      {
+        "question": "In Dr. Hare's design of the voltaic trough, what method was used to prevent metallic contact between the contiguous copper plates?",
+        "answer": "The copper plates were separated by thin veneers of wood or by interposing a single or double thickness of cartridge paper to prevent metallic contact."
+      },
+      {
+        "question": "How were the decomposing powers of the new and porcelain troughs measured and compared?",
+        "answer": "Both troughs were charged with a known quantity of acid, the current passed through a volta-electrometer to measure water decomposition, and the metal oxidation was determined by precipitating, washing, drying, igniting, and weighing the zinc, with results reduced to equivalents of zinc (32.5) and water (9)."
+      }
+    ]
+  },
+  {
+    "series": "NINTH SERIES",
+    "qna": [
+      {
+        "question": "What are the components and configuration of the electromotor as described in section 1052?",
+        "answer": "The electromotor consisted of a zinc cylinder (8 inches high, 4 inches in diameter) inserted between two parts of a double copper cylinder, separated by corks, with each metal piece connected to stiff wires ending in mercury-filled cups labeled G and E."
+      },
+      {
+        "question": "How were the helices in sections 1053 and 1054 constructed and distinguished?",
+        "answer": "In section 1053, a pasteboard tube was wound with four copper wires (1/24 inch thick) forming helices of 48, 49.5, 48, and 45 feet; wires 1 and 3 were joined to make helix i (96 feet) and wires 2 and 4 to make helix ii (94.5 feet). In section 1054, a separate helix (iii) was made from two copper wires each 46 feet long, united into a 92-foot helix."
+      },
+      {
+        "question": "What specific spark and shock phenomena were observed when using the electro-magnet (section 1056 and 1060) as the connecting conductor?",
+        "answer": "When the electro-magnet was used to complete the circuit, no spark occurred on making contact, but a very large and bright spark occurred on breaking contact, accompanied by considerable combustion of the mercury; similarly, a powerful shock was felt on breaking contact when using moistened hands."
+      },
+      {
+        "question": "How did inserting a bar of soft iron versus a bar of copper into a helix affect its performance, as described in section 1063?",
+        "answer": "Inserting a bar of soft iron transformed the helix into an electro-magnet and greatly increased its power, whereas inserting a bar of copper produced no change, leaving the action as that of the helix alone."
+      }
+    ]
+  },
+  {
+    "series": "THIRTEENTH SERIES",
+    "qna": [
+      {
+        "question": "What was the configuration and dimensions of the apparatus described in fig. 129?",
+        "answer": "The apparatus consisted of two brass balls on metal rods: a large ball A of 2 inches in diameter connected to an insulated brass conductor (which could be positive or negative) and a small ball B of 0.25 inch in diameter connected with a discharging train and uninsulated. The brass rods were 0.2 inch in thickness, and the distance between the balls could be varied."
+      },
+      {
+        "question": "What spark lengths were observed when two balls of different sizes were used with the small ball charged positive versus negative?",
+        "answer": "When the small ball was positive (with the large ball negative), sparks reaching 10 to 12 inches were obtained, whereas reversing the charges (small ball negative and large ball positive) produced sparks only about 1 to 1.5 inches in length."
+      },
+      {
+        "question": "What were the observed intervals for the transition from spark to brush discharge when the large ball was inductric positive compared to when it was inductric negative?",
+        "answer": "When the large ball was positive and inductric, negative sparks occurred until an interval of 0.49 inch, mixed spark and brush occurred between 0.49 and 0.51 inch, and from 0.52 inch upward only a negative brush appeared. When the large ball was negative and inductric, positive sparks appeared up to 1.15 inches, a mix of spark and brush from 1.15 to 1.55 inches, and a positive brush alone beyond 1.65 inches."
+      },
+      {
+        "question": "How does Faraday define 'inductric' and 'inducteous' bodies in his experiments?",
+        "answer": "Faraday defines 'inductric' bodies as the initially charged conductors that bring about the induction, and 'inducteous' bodies as those which assume the opposite electrical state as a consequence of the induction."
+      }
+    ]
+  },
+  {
+    "series": "TWELFTH SERIES",
+    "qna": [
+      {
+        "question": "What are the four specific modes of electrical discharge described by Faraday in the snippet?",
+        "answer": "The four modes are: (1) Conduction (or conductive discharge) involving no chemical action or displacement of particles; (2) Electrolytic discharge where chemical action and particle displacement occur; (3) Disruptive discharge, characterized by sparks or brushes causing violent particle displacement; and (4) Convection (or carrying discharge), in which solid particles or gases and liquids carry the discharge."
+      },
+      {
+        "question": "How does Faraday describe the relationship between induction and conduction in spermaceti?",
+        "answer": "Faraday explains that spermaceti acts as a dielectric with an inductive capacity of about or above 1.8, and though it is a poor conductor, the induction process is necessary to bring contiguous particles into a state that, when slightly lowered by particle communication, results in conduction."
+      },
+      {
+        "question": "Why do glass and shell-lac maintain their insulating properties according to Faraday's observations?",
+        "answer": "In glass and shell-lac, conduction almost disappears, allowing the polarized (inductive) state of the contiguous particles to be retained with little discharge action, thereby sustaining insulation."
+      },
+      {
+        "question": "How does the experiment involving a cold ice plate with metallic coatings demonstrate the interplay between induction and conduction?",
+        "answer": "The experiment shows that when a cold ice plate with metallic coatings is connected to an electrical machine and ground, induction is observed through sustained electrical tension on the coatings; however, if the ice converts to water, conduction rapidly follows the inductive state, reducing the observable induction effects."
+      }
+    ]
+  },
+  {
+    "series": "FIFTEENTH SERIES",
+    "qna": [
+      {
+        "question": "Based on the snippet, what are the specific dimensions of the trough used for keeping the Gymnotus alive?",
+        "answer": "The trough is about four feet long and sixteen inches wide and deep."
+      },
+      {
+        "question": "What water temperature is indicated as optimal for the Gymnotus in its native habitat?",
+        "answer": "Approximately 25° centigrade (77° Fahrenheit)."
+      },
+      {
+        "question": "Which electric fish is compared to the Gymnotus in terms of suitability for long-term preservation during experiments?",
+        "answer": "The Torpedo."
+      },
+      {
+        "question": "What experimental results obtained with the Gymnotus demonstrate the identity of its electric force with common electricity?",
+        "answer": "The experiments yielded strong shocks, a complete circuit, and a spark, thereby proving its electric force is identical to common electricity."
+      }
+    ]
+  },
+  {
+    "series": "SEVENTEENTH SERIES",
+    "qna": [
+      {
+        "question": "What physical apparatus did Faraday use, and what were its specific dimensions and configuration?",
+        "answer": "Faraday used a glass tube approximately five inches long with an internal diameter of 0.4 inch, open at both ends, bent and supported on a retort-stand."
+      },
+      {
+        "question": "How did Faraday design his experiment to isolate the effect of pure chemical force from that of metallic contact?",
+        "answer": "He used only one metal and one fluid, applying heat to only one contact to exalt the chemical force while keeping the fluid identical at both contacts, thereby excluding any influence from changes in metallic contact."
+      },
+      {
+        "question": "In experiments with cadmium wires in dilute sulphuric acid, what initial and subsequent current directions were observed?",
+        "answer": "Initially, the hot cadmium produced a positive current with a deflection of about 10°; over time, the current reversed, with the hot cadmium becoming negative and the deflection increasing to 10° or more."
+      },
+      {
+        "question": "What changes were observed when Faraday experimented with platinum wires in a sulphuret of potassium solution under varying temperature conditions?",
+        "answer": "When two platinum wires in a cold, strong sulphuret of potassium solution were used, heating one side (side A) to boiling made its platinum negative; cooling side A and heating side B resulted in the platinum at side B becoming negative, though the changes were irregular."
+      }
+    ]
+  },
+  {
+    "series": "FOURTEENTH SERIES",
+    "qna": [
+      {
+        "question": "According to Faraday in section 1675, what distinguishes conductors from insulators in the communication of electric forces?",
+        "answer": "Conductors are characterized by the ready communication of polar forces between contiguous particles (conduction), while insulators require a higher degree of force to transfer their polar forces (insulation)."
+      },
+      {
+        "question": "In the Leyden jar experiment described in sections 1682-1683, what role does external insulation play in the display of electrical indications?",
+        "answer": "When the jar is insulated, the restored charging ball and rod enable the protruding part to display electrical indications and charge a carrier, while the outer coating exhibits a contrary inductric state towards external objects."
+      },
+      {
+        "question": "How does Faraday illustrate the behavior of insulating dielectrics under induction using an analogy with small conductors?",
+        "answer": "He compares the particles of an insulating dielectric under induction to a series of small magnetic needles or insulated conductors that, when polarised by a charged globe, mimic the lateral diffusion of force observed in curved lines of inductive force."
+      },
+      {
+        "question": "Why does Faraday argue that action at a distance in induction cannot occur directly from a charged body to distant conductors?",
+        "answer": "He reasons that the inductive effect necessarily propagates through contiguous conducting particles, as experimental evidence shows that distant conductors are not affected while nearby dielectric particles are polarised by direct, contiguous action."
+      }
+    ]
+  },
+  {
+    "series": "SIXTEENTH SERIES",
+    "qna": [
+      {
+        "question": "What are the two main theories discussed in the snippet regarding the source of power in a voltaic pile?",
+        "answer": "The snippet contrasts the contact theory (as proposed by Volta) with the chemical action theory (advocated by Fabroni, Wollaston, Parrots, and later elaborated by De la Rive and others)."
+      },
+      {
+        "question": "Which experimental evidence does Faraday cite to support the chemical action theory in the voltaic pile?",
+        "answer": "Faraday refers to the continually increasing experimental evidence, notably the detailed electro-chemical actions and the work of De la Rive, demonstrating that chemical action invariably evolves electricity."
+      },
+      {
+        "question": "How does Marianini’s view on the contact theory differ from Volta’s original conception?",
+        "answer": "While Volta’s theory attributes the power to the simple contact of conductors, Marianini held that actual physical contact is not necessary; dissimilar conductors separated by a measurable gap can still affect each other’s state to generate electromotive force."
+      },
+      {
+        "question": "What conclusion does Faraday draw regarding the role of mere contact in the excitation of current in the voltaic pile?",
+        "answer": "Faraday concludes that mere contact does not produce the current by itself; it simply serves as a preparatory condition that leads ultimately to complete chemical action which is responsible for the excitation of the current."
+      }
+    ]
+  },
+  {
+    "series": "NINETEENTH SERIES",
+    "qna": [
+      {
+        "question": "What device and method did Faraday use to polarize the ray of light in his experiment?",
+        "answer": "He used a ray from an Argand lamp, which was polarized in a horizontal plane by reflection from a smooth face of glass, before passing it through a revolving Nichol's eye-piece."
+      },
+      {
+        "question": "How does Faraday define a 'line of magnetic force' in the context of his experiments?",
+        "answer": "He defines it as the exercise of magnetic force exerted in the lines usually called magnetic curves, whether they pass from or to magnetic poles or form concentric circles around an electric current."
+      },
+      {
+        "question": "What effect did the activation of the electro-magnet have on the image produced by the lamp-flame when the polarized ray passed through the silicated borate of lead glass?",
+        "answer": "When the magnetic force was developed by applying an electric current through the coils, the image of the lamp-flame became visible, and on stopping the current, the light instantly disappeared."
+      },
+      {
+        "question": "What were the specifications of the voltaic current and the strength of the electro-magnets used in the experiment?",
+        "answer": "The experiment employed a voltaic current from five pairs of Grove's construction, and the electro-magnets were powerful enough that each pole could sustain a weight ranging from twenty-eight to fifty-six or more pounds."
+      }
+    ]
+  },
+  {
+    "series": "EIGHTEENTH SERIES",
+    "qna": [
+      {
+        "question": "What were the capacity and evaporation characteristics of the boiler used in the experiments?",
+        "answer": "The boiler, belonging to the London Institution, held about ten gallons of water and allowed the evaporation of five gallons."
+      },
+      {
+        "question": "How was the steam-globe configured and what purpose did its attached terminal pieces serve?",
+        "answer": "The steam-globe was a metal globe with a capacity of thirty-two cubic inches attached to a 4-foot pipe, to which various terminal pieces (such as a cock, a wooden tube, or small metal/glass tubes) could be connected as vents for the issuing steam."
+      },
+      {
+        "question": "How did Faraday demonstrate that the excitation of electricity was independent of evaporation?",
+        "answer": "He showed that when the valve was suddenly raised at full steam pressure, no electricity was produced despite rapid evaporation, and that charging the boiler with excited resin prior to valve opening did not alter the charge when evaporation occurred."
+      },
+      {
+        "question": "What role does the friction of water particles play in the evolution of electricity according to Faraday's findings?",
+        "answer": "The friction of water particles carried by the steam against the solid surfaces of the apparatus produces the observed electricity."
+      }
+    ]
+  },
+  {
+    "series": "TWENTY-FIRST SERIES",
+    "qna": [
+      {
+        "question": "What apparatus was used to suspend the iron wire to observe its magnetic behavior when heated?",
+        "answer": "A fine platinum wire connected with the suspending thread was used to suspend the iron wire."
+      },
+      {
+        "question": "How did heated nickel behave in relation to ordinary magnets and an electro-magnet during the experiments?",
+        "answer": "Heated nickel became indifferent to ordinary magnets but still pointed to and was weakly attracted by the electro-magnet."
+      },
+      {
+        "question": "What was observed regarding the magnetic characteristics of the oxide of nickel compared to the pure nickel metal?",
+        "answer": "The oxide of nickel remained magnetic both when hot and cold, showing no change in magnetic behavior with heat, unlike the pure metal whose force varied with temperature."
+      },
+      {
+        "question": "What did Faraday observe about the magnetic properties of salts and compounds containing iron?",
+        "answer": "Faraday observed that all salts and compounds containing iron, such as clean crystals of proto-sulphate, were magnetic and pointed axially."
+      }
+    ]
+  },
+  {
+    "series": "TWENTY-FOURTH SERIES",
+    "qna": [
+      {
+        "question": "What were the dimensions and configuration of the helix used in the gravity-electricity experiment?",
+        "answer": "A 350-foot length of covered copper wire was formed into a hollow cylindrical helix 4 inches long with an internal diameter of 1 inch and an external diameter of 2 inches."
+      },
+      {
+        "question": "How was the falling body’s electrical current detected in the experimental setup?",
+        "answer": "The current was detected using a very delicate galvanometer placed about 50 feet aside from the line of fall, with connections verified using a feeble thermo-electric combination."
+      },
+      {
+        "question": "What was the effect of the twisted connecting wires on the galvanometer readings?",
+        "answer": "A section of the twisted wires opened into a loop, causing unequal traversal of the earth's magnetic lines of force which produced opposing currents of unequal magnitude, resulting in a differential current reading."
+      },
+      {
+        "question": "How did the experiments change when the copper cylinder was replaced by a bismuth cylinder?",
+        "answer": "The bismuth cylinder, chosen for its diamagnetic properties and poor electrical conductivity, produced uncertain evidence of a gravity-electricity relation compared to the copper core."
+      }
+    ]
+  },
+  {
+    "series": "TWENTIETH SERIES",
+    "qna": [
+      {
+        "question": "What are the dimensions of the soft iron core in the electro-magnet described, and how is it energized?",
+        "answer": "The soft iron core is 28 inches long and 2.5 inches in diameter, and it is energized by ten pairs of Grove's plates."
+      },
+      {
+        "question": "In the description of the horse-shoe shaped magnet, what are the dimensions of the iron bar and the arrangement of the copper coils?",
+        "answer": "The iron bar is 46 inches long and 3.75 inches in diameter, bent so that the poles are 6 inches apart; 522 feet of copper wire (0.17 inch in diameter) are wound in two coils of 16 inches each, arranged in three layers."
+      },
+      {
+        "question": "What purpose does the glass cylinder serve when placed between the magnetic poles in the suspension experiments?",
+        "answer": "The glass cylinder is used to keep the suspended substance free from motion caused by air agitation."
+      },
+      {
+        "question": "What specific precautions are mentioned regarding the material and form of the suspending apparatus in magnetic experiments?",
+        "answer": "The suspending apparatus must be made of non-magnetic material (e.g., copper rather than iron), and its form should be round or square rather than elongated horizontally to avoid taking up a position parallel to the magnetic lines."
+      }
+    ]
+  },
+  {
+    "series": "TWENTY-SECOND SERIES",
+    "qna": [
+      {
+        "question": "What method did Faraday use to produce long, crystallized cylinders of bismuth?",
+        "answer": "He melted clean bismuth in the bulb of a small open glass tube and then drew the molten metal into the tubular part, casting it into long cylinders with visible cleavage planes."
+      },
+      {
+        "question": "How did the crystalline form of bismuth affect its behavior when suspended between the poles of an electromagnet?",
+        "answer": "The crystalline arrangement caused different pieces to point in varying directions (axially, equatorially, or obliquely equatorial) while all ultimately returned to a fixed, diametral position despite variations in shape."
+      },
+      {
+        "question": "In Faraday’s experiments, what characteristic of bismuth was demonstrated by its reaction to a single magnetic pole?",
+        "answer": "Bismuth was shown to be strongly diamagnetic as it was repelled by a single magnetic pole and moved from regions of stronger to weaker magnetic force."
+      },
+      {
+        "question": "What specific suspension apparatus did Faraday use to ensure that the bismuth pieces were free from any magnetic influence before testing?",
+        "answer": "He used a suspension made from a single cocoon silk fiber (12 to 24 inches long) attached to a small, straight copper wire (about 2 inches in length) with its end twisted into a head and cemented with a pellat of white wax and Canada balsam, which was pre-tested for magnetic neutrality."
+      }
+    ]
+  },
+  {
+    "series": "TWENTY-THIRD SERIES",
+    "qna": [
+      {
+        "question": "What mechanism did Faraday employ to move the metal cylinders in his experiment?",
+        "answer": "He used a straight wooden lever of 2 feet in length, fixed by an axis at one end, attached to a crank and wheel that vibrated the lever horizontally, moving the metal cylinders attached to a 2-foot brass rod through a 2-inch range."
+      },
+      {
+        "question": "What are the specific dimensions of the large cylinder electromagnet used in the experiment?",
+        "answer": "The electromagnet had an iron core 21 inches long and 1.7 inches in diameter, with one end reduced to a 1-inch length and 1-inch diameter."
+      },
+      {
+        "question": "Describe the construction and dimensions of the hollow helix used by Faraday.",
+        "answer": "The hollow helix was made of 516 feet of fine covered copper wire, measured 3 inches in length, had an external diameter of 2 inches and an internal diameter of 1 inch, and was positioned concentrically with the moving metal cylinder."
+      },
+      {
+        "question": "What measures did Faraday take to minimize experimental errors related to apparatus motion?",
+        "answer": "He ensured that all parts of the apparatus were perfectly steady by placing the machine, the magnet with helix, and the galvanometer on separate tables on a stone floor, with careful structural support and using non-magnetic materials for moving parts."
+      }
+    ]
+  },
+  {
+    "series": "TWENTY-SIXTH SERIES",
+    "qna": [
+      {
+        "question": "What does Faraday mean by the term 'conducting power' in the context of magnetic force?",
+        "answer": "It refers to the capability of a body to transmit magnetic force."
+      },
+      {
+        "question": "Which specific substances does Faraday cite as examples of bodies that are 'freely magnetic' in his experiments?",
+        "answer": "Iron, nickel, cobalt, and their combinations."
+      },
+      {
+        "question": "According to the text, what happens when a medium with a certain conducting power is present in a magnetic field and a portion of another medium with greater conducting power is introduced?",
+        "answer": "The portion with greater conducting power is drawn toward the place of greatest force, displacing the initially present medium."
+      },
+      {
+        "question": "How do paramagnetic and diamagnetic substances behave in a magnetic field with unequal force as described by Faraday?",
+        "answer": "Paramagnetic substances are attracted from weaker to stronger regions, while diamagnetic substances are repelled from stronger to weaker regions."
+      }
+    ]
+  },
+  {
+    "series": "TWENTY-FIFTH SERIES",
+    "qna": [
+      {
+        "question": "According to Faraday’s experiments in this series, how do oxygen and nitrogen differ in their magnetic behavior when compared to common air?",
+        "answer": "Nitrogen and many other gases are strongly diamagnetic relative to common air, being repelled from the region of greatest magnetic force, whereas oxygen behaves as a magnetic body, being attracted to that region."
+      },
+      {
+        "question": "What apparatus and configuration did Faraday employ to investigate potential changes in the bulk of the air in the magnetic field?",
+        "answer": "He used a metal screen with a pinhole placed before the flame of a bright lamp in a dark room to create an artificial star, a great horseshoe magnet excited by twenty pairs of Grove's plates positioned 46 feet away, and a fine refracting telescope with a 3-inch aperture and 46-inch focal length equipped with a micrometer."
+      },
+      {
+        "question": "How was the path of the light ray arranged relative to the magnetic poles during the experiment detailed in the snippet?",
+        "answer": "The light ray passed 4 inches close to the surface of the first magnetic pole, then traveled through 6 inches of air, and subsequently passed 4 inches close to the surface of the second pole."
+      },
+      {
+        "question": "What were the observations when the light ray was made to pass in various positions relative to geometric edges of the magnet, such as near long right-angled edges or between two hemispherical poles?",
+        "answer": "No effect on the course or character of the light ray was observed regardless of whether it passed parallel and close to a long right-angled edge, between two right-angled edges, or over the line joining two closely placed hemispherical poles."
+      }
+    ]
+  },
+  {
+    "series": "TWENTY-EIGHTH SERIES",
+    "qna": [
+      {
+        "question": "Which instrument does Faraday describe for tracing the direction of magnetic lines of force?",
+        "answer": "A very small magnetic needle that remains tangent to the line as it moves."
+      },
+      {
+        "question": "How does Faraday demonstrate that the total magnetic force remains constant along any section of the lines?",
+        "answer": "He shows that although the lines may vary in form or converge/diverge, the sum of power contained in any one section is exactly equal to that in any other section of the same lines."
+      },
+      {
+        "question": "What two experimental methods does Faraday propose for recognizing magnetic lines of force?",
+        "answer": "By observing the deflection of a magnetic needle and by detecting the induced current in a wire moving transversely across the lines."
+      },
+      {
+        "question": "Why does Faraday advocate for representing magnetic forces as lines of force rather than as concentrated centers such as the poles of magnets?",
+        "answer": "Because lines of force convey both the magnitude and direction of the magnetic force continuously, offering a more accurate depiction of magnetic conditions than merely representing forces as concentrated at poles."
+      }
+    ]
+  },
+  {
+    "series": "TWENTY-NINTH SERIES",
+    "qna": [
+      {
+        "question": "What is the principle behind using the induced magneto-electric current in Faraday's experiments as described in this series?",
+        "answer": "The principle is that the induced magneto-electric current is used as a test and measure of magnetic forces, being directly proportional to the amount of magnetic force (lines of force) intersected by the moving wire."
+      },
+      {
+        "question": "Describe the design and configuration of the galvanometer’s conductor as detailed in the snippet.",
+        "answer": "The galvanometer uses a square copper bar 0.2 inches thick that passes twice around the plane of the vibrating needles, then continues outward to form two descending portions designed to dip into cups of mercury."
+      },
+      {
+        "question": "What procedure did Faraday employ to eliminate the unintended magnetic effects on the galvanometer’s copper bar?",
+        "answer": "Faraday cleaned the copper bar carefully with fine sand-paper to remove iron contamination, which initially caused the needle to deviate from true zero, ensuring the bar was perfectly clean and the needle stood equidistantly between the coils."
+      },
+      {
+        "question": "What measures were taken to minimize resistance effects in the connections of the galvanometer, and why was this important?",
+        "answer": "The connections used copper rod or wire 0.2 inches in diameter and were kept only as long as necessary, because increasing the length from 6 feet to 8, 10, or 12 feet made a considerable difference at low current intensities, demonstrating Ohm’s law with low electric currents."
+      }
+    ]
+  },
+  {
+    "series": "TWENTY-SEVENTH SERIES",
+    "qna": [
+      {
+        "question": "What are the specific physical dimensions and construction details of the ring‐helix used in the experiments?",
+        "answer": "The helix consisted of about 12 feet of covered copper wire formed into a ring of approximately twenty-five convolutions with an external diameter of 1 inch, with the wire continuations twisted together to neutralize magnetic effects."
+      },
+      {
+        "question": "How does the proximity of the helix affect the deflection and equilibrium of a freely suspended magnetic needle?",
+        "answer": "As the helix is brought near the needle along its magnetic meridian, the needle's force decreases, moving from a stable to an unstable equilibrium; at close distances, the needle no longer aligns with the magnetic meridian but deflects from it."
+      },
+      {
+        "question": "What is the configuration of the magnetic lines generated by the ring‐helix and how are they oriented in relation to the electric current?",
+        "answer": "The helix produces a system of magnetic lines that pass through its axis, open outward, and re-enter at the axis, with the circles of magnetic force being everywhere perpendicular to the electric current traversing the convolutions."
+      },
+      {
+        "question": "How do the two different orientations of the helix (as depicted in the referenced figures) influence the behavior of nearby magnetic needles, corresponding to diamagnetic and paramagnetic conditions?",
+        "answer": "When the helix is oriented so that its external magnetic polarity accords with the earth’s force, the needle retains its natural position with increased force, representing a diamagnetic condition; when rotated about to the opposite position, the needle deflects in the contrary direction, yielding a paramagnetic-like disposition."
+      }
+    ]
+  }
+]

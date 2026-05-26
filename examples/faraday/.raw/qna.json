@@ -1,0 +1,296 @@
+[
+  {
+    "series": "SECOND SERIES",
+    "qna": [
+      {
+        "question": "What apparatus was used to observe the effects of terrestrial magneto-electric induction?",
+        "answer": "A hollow helix connected with a galvanometer and a soft iron cylinder."
+      },
+      {
+        "question": "What was the effect on the galvanometer needle when the helix and soft iron bar were inverted?",
+        "answer": "The galvanometer needle was immediately deflected, swinging through an arc of 150° or 160°."
+      },
+      {
+        "question": "What was the result of inverting the helix and soft iron bar when one end of the helix was uppermost?",
+        "answer": "The galvanometer needle passed in the same direction regardless of whether the inversion was to the right or left."
+      },
+      {
+        "question": "What happened when the soft iron bar was inverted within four feet of the galvanometer?",
+        "answer": "Not the slightest effect upon the galvanometer was produced."
+      }
+    ]
+  },
+  {
+    "series": "FIRST SERIES",
+    "qna": [
+      {
+        "question": "What is the general term used by Faraday to describe the power of electricity of tension to cause an opposite electrical state in its vicinity?",
+        "answer": "Induction"
+      },
+      {
+        "question": "How many feet of copper wire were used to construct the helix described in the experiments?",
+        "answer": "Twenty-six feet"
+      },
+      {
+        "question": "What type of battery was used in conjunction with one of the helices connected to a galvanometer?",
+        "answer": "A voltaic battery of ten pairs of plates four inches square"
+      },
+      {
+        "question": "What was the total length of wire in the resulting iron helix constructed in the experiments?",
+        "answer": "Two hundred and fourteen feet"
+      }
+    ]
+  },
+  {
+    "series": "FOURTH SERIES",
+    "qna": [
+      {
+        "question": "What was the primary observation made by Faraday regarding ice in the context of electric conduction?",
+        "answer": "Ice was found to be a non-conductor of electricity when interposed in the circuit of a powerful voltaic battery."
+      },
+      {
+        "question": "What materials were used to construct the vessels for Faraday's experiments on electric conduction?",
+        "answer": "The vessels were made of tin and contained plates of platina fixed by corks."
+      },
+      {
+        "question": "What was the configuration of the voltaic battery used in Faraday's experiments?",
+        "answer": "The voltaic battery consisted of twenty pairs of four-inch plates, each with double coppers."
+      },
+      {
+        "question": "What effect did thawing the ice have on the conduction of electricity in Faraday's experiments?",
+        "answer": "Thawing the ice allowed conduction to take place, resulting in a permanent deflection of the galvanometer needle nearly 70°."
+      }
+    ]
+  },
+  {
+    "series": "THIRD SERIES",
+    "qna": [
+      {
+        "question": "What distinction does Faraday make between common electricity and voltaic electricity in terms of their excitation and conduction?",
+        "answer": "Common electricity is excited upon non-conductors and is readily carried off by conductors and imperfect conductors, while voltaic electricity is excited upon combinations of perfect and imperfect conductors and is only transmitted by perfect conductors or the best imperfect conductors."
+      },
+      {
+        "question": "Which philosophers does Faraday mention as having contributed to the understanding of the identity of electricities?",
+        "answer": "Faraday mentions Cavendish, Wollaston, and Colladon as philosophers who have contributed to the understanding of the identity of common, animal, and voltaic electricity."
+      },
+      {
+        "question": "What does Faraday state about the location of common electricity compared to voltaic electricity within a metal?",
+        "answer": "Faraday states that common electricity is diffused over the surface of the metal, whereas voltaic electricity exists within the metal."
+      },
+      {
+        "question": "What does Sir Humphry Davy suggest about animal electricity in relation to other forms of electricity?",
+        "answer": "Sir Humphry Davy suggests that animal electricity may be of a peculiar kind and that distinctions might be established in pursuing the various modifications or properties of electricity in different forms."
+      }
+    ]
+  },
+  {
+    "series": "FIFTH SERIES",
+    "qna": [
+      {
+        "question": "What distinction does Faraday make between the electricities obtained from the common electrical machine and the voltaic battery?",
+        "answer": "The distinction is that the electricities from the machine can be raised to a very high tension with a small quantity, while the voltaic battery supplies an enormous quantity at comparatively low tension."
+      },
+      {
+        "question": "How does the tension of machine electricity affect its ability to pass through conductors compared to the voltaic battery?",
+        "answer": "Machine electricity can pass through any length of water or other conductors as fast as it can be produced, whereas the current from the voltaic battery suffers serious diminution with increased length of the conductor."
+      },
+      {
+        "question": "What experimental setup did Faraday use to demonstrate electro-chemical decomposition with machine electricity?",
+        "answer": "Faraday used a piece of litmus paper and a piece of turmeric paper moistened in a solution of sulphate of soda, with the positive pole on the litmus and the negative pole on the turmeric, to show the evolution of acid and alkali."
+      },
+      {
+        "question": "What was the result when Faraday used a seventy-foot long insulated string in his experiments?",
+        "answer": "Decomposition took place exactly as before, demonstrating that electricity could pass through the entire length of the insulated string."
+      }
+    ]
+  },
+  {
+    "series": "SEVENTH SERIES",
+    "qna": [
+      {
+        "question": "What term does Faraday propose to replace 'pole' in the context of electro-chemical decomposition?",
+        "answer": "Faraday proposes to use the term 'Electrode' to replace 'pole'."
+      },
+      {
+        "question": "According to Faraday, what is the role of the electrodes in electro-chemical decomposition?",
+        "answer": "Electrodes are the surfaces that bound the extent of the decomposing matter in the direction of the electric current."
+      },
+      {
+        "question": "What does Faraday suggest about the determining force in electro-chemical decomposition?",
+        "answer": "Faraday suggests that the determining force is not at the poles but within the body under decomposition."
+      },
+      {
+        "question": "How does Faraday define the surfaces at which the electric current enters and leaves a decomposing body?",
+        "answer": "He defines these surfaces as important places of action that require distinction from the poles and are always in contact with the electrodes."
+      }
+    ]
+  },
+  {
+    "series": "EIGHTH SERIES",
+    "qna": [
+      {
+        "question": "What does Faraday identify as the source of electricity in the voltaic pile?",
+        "answer": "Faraday identifies the supply of electricity as being due to chemical powers."
+      },
+      {
+        "question": "What experimental setup does Faraday describe to investigate the origin of the voltaic current?",
+        "answer": "Faraday describes an experiment with amalgamated zinc and platina to investigate the origin of the voltaic current."
+      },
+      {
+        "question": "What two factors does Faraday suggest could be the determining cause of the voltaic current?",
+        "answer": "Faraday suggests that either metallic contact or chemical action could be the determining cause of the voltaic current."
+      },
+      {
+        "question": "What challenge does Faraday mention regarding the decomposition by a single pair of plates?",
+        "answer": "Faraday mentions the difficulty of effecting decomposition by a single pair of plates, except in the fluid exciting them into action."
+      }
+    ]
+  },
+  {
+    "series": "SIXTH SERIES",
+    "qna": [
+      {
+        "question": "What was the purpose of the glass tube used in Faraday's experiments?",
+        "answer": "The glass tube was used to contain dilute sulphuric acid and to facilitate the electrolysis of water, allowing measurement of the gases evolved."
+      },
+      {
+        "question": "What phenomenon was observed regarding the gases evolved during the electrolysis of water?",
+        "answer": "A deficiency and eventual disappearance of the gases, specifically oxygen and hydrogen, were observed after disconnecting the tube from the voltaic battery."
+      },
+      {
+        "question": "What was the role of the positive pole in the experiments conducted by Faraday?",
+        "answer": "The positive pole caused the union of oxygen and hydrogen gases when introduced into separate tubes containing them."
+      },
+      {
+        "question": "How did Faraday conclude that the effect observed was due to the action of the platina poles?",
+        "answer": "Faraday determined that the effect was due to the action of the platina poles on the gas around them, as it was not due to gas escape, solution, or recombination."
+      }
+    ]
+  },
+  {
+    "series": "NINTH SERIES",
+    "qna": [
+      {
+        "question": "What was the height and diameter of the zinc cylinder used in the electromotor?",
+        "answer": "The zinc cylinder was eight inches high and four inches in diameter."
+      },
+      {
+        "question": "How were the helices constructed in Faraday's experiments?",
+        "answer": "The helices were constructed using a pasteboard tube with four copper wires, each twenty-fourth of an inch in thickness, wound around it, with convolutions separated by string and prevented from touching by intervening calico."
+      },
+      {
+        "question": "What phenomenon did Faraday identify as being related to the inductive action of electric currents?",
+        "answer": "Faraday identified the effects observed with electric currents as being related to the phenomena of induction."
+      },
+      {
+        "question": "What was the purpose of the cups G and E in Faraday's electromotor setup?",
+        "answer": "The cups G and E were used for making or breaking the contacts of wires, helices, or electro-magnets to complete the circuit."
+      }
+    ]
+  },
+  {
+    "series": "TENTH SERIES",
+    "qna": [
+      {
+        "question": "What is the primary chemical reaction that occurs in a voltaic battery constructed of zinc and platina?",
+        "answer": "The primary chemical reaction involves the action of dilute sulphuric acid exciting the battery into powerful action between the zinc and platina."
+      },
+      {
+        "question": "What happens to the electric current in a voltaic battery when it is not closed?",
+        "answer": "When a voltaic battery is not closed, all the action is local, and no electric current is circulated."
+      },
+      {
+        "question": "How does the construction of a voltaic trough with coppers surrounding the zincs affect its efficiency?",
+        "answer": "The construction allows for a compact, powerful, economical, and easy-to-use instrument by preventing metallic contact between the coppers and ensuring efficient circulation of forces."
+      },
+      {
+        "question": "What is the significance of the resistance at the place of decomposition in a voltaic battery?",
+        "answer": "The resistance at the place of decomposition is able to stop the current, acting as insulation to the electricity of the contiguous plates."
+      }
+    ]
+  },
+  {
+    "series": "ELEVENTH SERIES",
+    "qna": [
+      {
+        "question": "What is the significance of induction according to Faraday in his experimental researches?",
+        "answer": "Induction is of the most general influence in electrical phenomena and is considered a first, essential, and fundamental principle."
+      },
+      {
+        "question": "What experimental observation did Faraday make regarding electrolytes and their state?",
+        "answer": "Faraday observed that electrolytes refuse to yield their elements to a current when in the solid state but do so freely when in the liquid condition."
+      },
+      {
+        "question": "What apparatus did Faraday describe using to demonstrate induction with ice and platina?",
+        "answer": "Faraday described using a plate of ice coated with platina foil on its two surfaces, connected to a source of electrical power, to demonstrate common induction."
+      },
+      {
+        "question": "What does Faraday imply about the relationship between electrical powers and particles of matter in inductive actions?",
+        "answer": "Faraday implies that there is an impossibility of absolutely charging matter with one form of electricity only, and that electrical powers and particles of matter are closely related, especially in inductive actions."
+      }
+    ]
+  },
+  {
+    "series": "THIRTEENTH SERIES",
+    "qna": [
+      {
+        "question": "What is the observed difference in spark length when a small ball is positive and a large ball is negative compared to when the small ball is negative and the large ball is positive?",
+        "answer": "When the small ball is positive and the large ball is negative, sparks of 10 or 12 inches in length are obtained; when the small ball is negative and the large ball is positive, sparks are only an inch or an inch and a half long."
+      },
+      {
+        "question": "What terms does Faraday propose to distinguish between charged bodies in inductive relation?",
+        "answer": "Faraday proposes to call the originally charged bodies 'inductric' bodies and those that assume the opposite state due to induction 'inducteous' bodies."
+      },
+      {
+        "question": "According to Faraday, what determines the origin of a spark or brush discharge?",
+        "answer": "A spark or brush discharge originates at the charged surface, with the discharge being considered positive or negative based on whether it originates from a positive or negative surface."
+      },
+      {
+        "question": "What experimental setup does Faraday use to investigate the differences in disruptive discharge?",
+        "answer": "Faraday uses balls of different diameters arranged at the ends of rods, where either can be electrified by a machine and discharge sparks to the other."
+      }
+    ]
+  },
+  {
+    "series": "TWELFTH SERIES",
+    "qna": [
+      {
+        "question": "What are the four modes of discharge identified by Faraday?",
+        "answer": "The four modes of discharge identified are conduction, electrolytic discharge, disruptive discharge, and convection."
+      },
+      {
+        "question": "How does Faraday describe the relationship between insulation and conduction?",
+        "answer": "Faraday states that insulation and conduction depend upon the same molecular action of the dielectrics concerned and are extreme degrees of one common condition."
+      },
+      {
+        "question": "What is the significance of the insulating dielectric in the context of a charged Leyden jar according to Faraday?",
+        "answer": "Faraday notes that the action of the insulating dielectric in a charged Leyden jar and that of the wire in discharging it may seem different, but they can be associated by numerous intermediate links."
+      },
+      {
+        "question": "Which substance does Faraday mention as a dielectric through which induction can take place?",
+        "answer": "Faraday mentions sperm oil (spermaceti) as a dielectric through which induction can take place."
+      }
+    ]
+  },
+  {
+    "series": "FOURTEENTH SERIES",
+    "qna": [
+      {
+        "question": "What does the theory of induction set forth regarding the nature of electric forces?",
+        "answer": "The theory of induction does not assume anything new about the nature of electric forces, but only about their distribution."
+      },
+      {
+        "question": "How does the theory describe the state of particles in relation to electric forces?",
+        "answer": "The theory assumes that all particles, whether of insulating or conducting matter, are as wholes conductors."
+      },
+      {
+        "question": "What constitutes conduction and insulation according to Faraday's observations?",
+        "answer": "Ready communication of forces between contiguous particles constitutes conduction, while difficult communication constitutes insulation."
+      },
+      {
+        "question": "What is the effect of ordinary induction as described in the text?",
+        "answer": "Ordinary induction results from the action of matter charged with excited or free electricity upon insulating matter, tending to produce an equal amount of the contrary state."
+      }
+    ]
+  }
+]
