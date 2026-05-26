@@ -11,3 +11,7 @@ run_cache.txt
 *.parquet
 *.pkl
 *.tmp
+/crawl_cache/
+/examples/agent/
+/examples/faraday/.raw/
+.wraithenv
